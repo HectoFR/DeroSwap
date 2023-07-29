@@ -1,30 +1,54 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div>
+    <aside>
+      <AssetsList  class="top"/>
+      <div class="bottom">
+        <div class="states">
+          <span>✔ Daemon</span>
+          <span>⨉ Wallet</span>
+        </div>
+        <div class="address">bc1qxy2kgdygjrs...rf2493pkkfjhx0wlh</div>
+        <a class="see-more" href="">
+          See more assets
+        </a>
+      </div>
+    </aside>
+    <section>
+      <header>
+        <nav>
+          <ul>
+            <li>
+              <router-link :to="{ name: 'swap', }">Swap</router-link>
+            </li>
+            <li>
+              <router-link :to="{ name: 'pool', }">Pool</router-link>
+            </li>
+            <li>
+              <router-link :to="{ name: 'bridge', }">Bridge</router-link>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <router-view />
+      </main>
+    </section>
+    <footer>
+
+    </footer>
+  </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import AssetsList from "@/components/AssetsList.vue";
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+export default {
+  name: "App",
+  components: {
+    AssetsList,
   }
 }
+</script>
+
+<style lang="scss">
 </style>

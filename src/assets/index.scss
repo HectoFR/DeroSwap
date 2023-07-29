@@ -1,0 +1,211 @@
+@use "@/assets/variables.scss" as var;
+
+@font-face {
+    font-family: Blender;
+    src: url(@/assets/fonts/blender.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: Blender;
+    font-weight: bold;
+    src: url(@/assets/fonts/blender-bold.woff2) format("woff2");
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body, #app {
+    height: 100%;
+}
+
+html {
+    background: var.$white;
+    font-size: 62.5%; // = 10px
+}
+  
+body {
+    font-family: "Blender", sans-serif;
+    font-size: var.$font-size-regular;
+    color: var.$white;
+    margin: 0;
+    background: #040f29;
+
+    * {
+        z-index: 2;
+    }
+}
+
+a, a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+h1 {
+    font-size: var.$font-size-xx-large;
+}
+
+#app > div:first-child {
+    display: flex;
+    height: 100%;
+    > section {
+        flex: 1;
+        position: relative;
+
+        &:before {
+            background: #040f29;
+            background-image: url("@/assets/img/bg.svg");
+            background-repeat: no-repeat;
+            background-position: top;
+            background-size: cover;
+    
+            content: "";
+            z-index: -1;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 25%;
+        }
+    }
+}
+
+aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30rem;
+    border-right: 1px solid rgba(var.$white, 10%);
+    background: url(https://dero.io/img/exclusion/Downloads_bg2.jpg);
+    h2 {
+        text-transform: uppercase;
+        text-align: center;
+        font-size: var.$font-size-x-large;
+    }
+
+    .top {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    ul {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        list-style: none;
+        padding: 0;
+        height: 100%;
+        overflow: auto;
+
+        &::-webkit-scrollbar {
+            width: 0.5rem; /* width of the entire scrollbar */
+        }
+          
+        &::-webkit-scrollbar-track {
+            background: transparent; /* color of the tracking area */
+          }
+          
+        &::-webkit-scrollbar-thumb {
+            background-color: white; /* color of the scroll thumb */
+            border-radius: 0.5rem; /* roundness of the scroll thumb */
+          }
+        
+        li {
+            margin: 0 3rem;
+            padding: 1rem 0;
+            font-size: var.$font-size-regular;
+            
+            a {
+                background: none;
+                border: none;
+                color: white;
+                display: flex;
+                padding: 1rem;
+                align-items: center;
+                gap: 2rem;
+                position: relative;
+                width: 100%;
+                
+                span {
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                &.active, &:hover {
+                    background: rgba(#dedede, 0.2);
+                    border-radius: 1rem;
+                }
+            }
+
+            & + li {
+                border-top: 1px solid white;
+            }
+        }
+        
+        img {
+            width: 3rem;
+            height: 3rem;
+        }
+    }
+
+    .bottom {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+
+        .states {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .see-more {
+            border: 1px solid #95a6c0;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 1rem 3rem;
+            width: 75%;
+            border-radius: 1rem;
+            transition: background-color 0.5s;
+            text-align: center;
+            
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.4);
+            }
+        }
+    }
+}
+
+header {
+    border-bottom: 2px solid var.$light-background-color;
+}
+
+nav {
+    padding: 0 8rem;
+    ul {
+        list-style: none;
+        display: flex;
+        justify-content: space-around;
+        font-size: var.$font-size-large;
+        font-weight: bold;
+        a {
+            padding: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            transition: color 0.5s;
+            &:hover {
+                color: white;
+                border-bottom: 1px solid white;
+            }
+        }
+    }
+}
+
+main {
+    padding: 2rem;
+}
