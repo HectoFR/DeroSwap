@@ -1,7 +1,8 @@
 <template>
     <div class="asset-input">
         <div>
-            <button
+            <component
+                :is="noSelectAsset ? 'div' : 'button'"
                 class="asset-selector"
                 @click="$emit('asset-select')"
             >   
@@ -9,12 +10,13 @@
                     <img :src="asset.img" />
                     {{ asset.name }}
                 </template>
-            </button>
+            </component>
         </div>
         <div class="input-container">
             <input 
                 type="number"
                 :value="amount"
+                placeholder="0"
                 @change="$emit('amount-changed', $event.target.valueAsNumber)"
             />
             <div class="amount-selector">
@@ -33,6 +35,7 @@ export default {
     props: {
         asset: Object,
         amount: Number,
+        noSelectAsset: Boolean,
     },
 }
 </script>
@@ -56,6 +59,9 @@ export default {
         border-radius: 1rem 0 0 1rem;
         color: white;
         transition: background-color 0.5s;
+    }
+    button.asset-selector {
+        cursor: pointer;
         &:hover {
             background-color: lighten(var.$light-background-color, 35%);
         }

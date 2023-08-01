@@ -52,6 +52,9 @@ h1 {
         flex: 1;
         position: relative;
 
+        display: flex;
+        flex-direction: column;
+
         &:before {
             background: #040f29;
             background-image: url("@/assets/img/bg.svg");
@@ -78,6 +81,7 @@ aside {
     width: 30rem;
     border-right: 1px solid rgba(var.$white, 10%);
     background: url(https://dero.io/img/exclusion/Downloads_bg2.jpg);
+    z-index: 10;
     h2 {
         text-transform: uppercase;
         text-align: center;
@@ -88,67 +92,6 @@ aside {
         display: flex;
         flex-direction: column;
         overflow: hidden;
-    }
-
-    ul {
-        position: relative;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        list-style: none;
-        padding: 0;
-        height: 100%;
-        overflow: auto;
-
-        &::-webkit-scrollbar {
-            width: 0.5rem; /* width of the entire scrollbar */
-        }
-          
-        &::-webkit-scrollbar-track {
-            background: transparent; /* color of the tracking area */
-          }
-          
-        &::-webkit-scrollbar-thumb {
-            background-color: white; /* color of the scroll thumb */
-            border-radius: 0.5rem; /* roundness of the scroll thumb */
-          }
-        
-        li {
-            margin: 0 3rem;
-            padding: 1rem 0;
-            font-size: var.$font-size-regular;
-            
-            a {
-                background: none;
-                border: none;
-                color: white;
-                display: flex;
-                padding: 1rem;
-                align-items: center;
-                gap: 2rem;
-                position: relative;
-                width: 100%;
-                
-                span {
-                    text-overflow: ellipsis;
-                    overflow: hidden;
-                }
-
-                &.active, &:hover {
-                    background: rgba(#dedede, 0.2);
-                    border-radius: 1rem;
-                }
-            }
-
-            & + li {
-                border-top: 1px solid white;
-            }
-        }
-        
-        img {
-            width: 3rem;
-            height: 3rem;
-        }
     }
 
     .bottom {
@@ -206,6 +149,41 @@ nav {
     }
 }
 
+// Views
+
 main {
+    flex: 1;
     padding: 2rem;
+    overflow: auto;
+    > div {
+        margin: 0 20%;
+        h1 {
+          text-align: center;
+          margin: 2rem 0 0 0;
+        }
+    }
 }
+
+.infos {
+    margin: 3rem 0;
+}
+
+.view-submit-button {
+    text-align: center;
+    margin-top: 3rem;
+    button {
+      border: 1px solid var.$light-background-color;
+      border-radius: 1rem;
+      width: 50%;
+      padding: 1rem;
+      background-color: var.$ascent-color;
+      color: white;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-color 0.5s;
+      &:hover {
+        background-color: var.$light-ascent-color;
+      }
+    }
+  }

@@ -8,9 +8,12 @@
           <span>⨉ Wallet</span>
         </div>
         <div class="address">bc1qxy2kgdygjrs...rf2493pkkfjhx0wlh</div>
-        <a class="see-more" href="">
+        <!-- <router-link
+          class="see-more"
+          :to="{name: 'assets'}"
+        >
           See more assets
-        </a>
+        </router-link> -->
       </div>
     </aside>
     <section>
@@ -23,9 +26,9 @@
             <li>
               <router-link :to="{ name: 'pool', }">Pool</router-link>
             </li>
-            <li>
+            <!-- <li>
               <router-link :to="{ name: 'bridge', }">Bridge</router-link>
-            </li>
+            </li> -->
           </ul>
         </nav>
       </header>

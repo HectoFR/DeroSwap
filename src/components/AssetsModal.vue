@@ -16,24 +16,22 @@
                     placeholder="Search..."
                 />
             </div>
-            <ul>
-                <li
-                    v-for="asset in asszets"
-                    :key="asset.name"
-                >
-                    <button @click="$emit('select', asset)">
-                        <img :src="asset.img" :alt="`${asset.name} image`">
-                        <span>{{ asset.name }}</span>
-                    </button>
-                </li>
-            </ul>
+            <AssetsGrid
+                :assets="assets"
+                @select="$emit('select', $event)"
+            />
         </div>
     </dialog>
 </template>
 
 <script>
+import AssetsGrid from "@/components/AssetsGrid.vue";
+
 export default {
     name: 'AssetsModal',
+    components: {
+        AssetsGrid,
+    },
     props: {
     },
     data() {
@@ -42,7 +40,7 @@ export default {
         }
     },
     computed: {
-        asszets() {
+        assets() {
             const allAssets = [
                 ...this.$store.state.assets,
                 ...this.$store.state.assets, // TODO

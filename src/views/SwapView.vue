@@ -38,7 +38,7 @@
         <br />
         Fees 0.000 {{ assetFrom.asset.name }}
       </p>
-      <div class="swap-button-container">
+      <div class="view-submit-button">
         <button>
           Swap
         </button>
@@ -90,16 +90,6 @@ export default {
 @use "@/assets/variables.scss" as var;
 
 #swap {
-  margin: 0 20%;
-  h1 {
-    text-align: center;
-    margin: 2rem 0 0 0;
-  }
-
-  .infos {
-    margin: 5rem 0;
-  }
-
   .arrow {
     text-align: center;
     margin: 3rem 0;
@@ -114,25 +104,6 @@ export default {
       transition: color 0.5s;
       &:hover {
         color: var.$light-ascent-color;
-      }
-    }
-  }
-
-  .swap-button-container {
-    text-align: center;
-    button {
-      border: 1px solid var.$light-background-color;
-      border-radius: 1rem;
-      width: 50%;
-      padding: 1rem;
-      background-color: var.$ascent-color;
-      color: white;
-      font-weight: bold;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background-color 0.5s;
-      &:hover {
-        background-color: var.$light-ascent-color;
       }
     }
   }
