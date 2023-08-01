@@ -1,24 +1,12 @@
-# dex
+# DeroSwap
 
-## Project setup
-```
-npm install
-```
+## STILL IN DEVELOPMENT
+Decentralized Exchange on [DERO Blockchain](https://dero.io)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Screenshots
 
-### Compiles and minifies for production
-```
-npm run build
-```
+![Swap](/docs/1.png)
 
-### Lints and fixes files
-```
-npm run lint
-```
+![Swap Select](/docs/2.png)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![Pool](/docs/3.png)
