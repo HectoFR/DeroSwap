@@ -10,7 +10,7 @@
                         <img :src="asset.img" :alt="`${asset.name} image`">
                         <span>{{ asset.name }}</span>
                     </div>
-                    <div v-if="asset.balance">Balance: {{asset.balance}}</div>
+                    <div v-if="asset.balance">Balance: {{ asset.balance }}</div>
                 </a>
             </li>
         </ul>
@@ -37,30 +37,13 @@ export default {
 
 .assets-list {
     position: relative;
-    flex: 1;
+    overflow: auto;
     display: flex;
     flex-direction: column;
-    list-style: none;
+    flex: 1;
     padding: 0;
     height: 100%;
-    overflow: auto;
-
-    &::-webkit-scrollbar {
-        width: 0.5rem;
-        /* width of the entire scrollbar */
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-        /* color of the tracking area */
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background-color: white;
-        /* color of the scroll thumb */
-        border-radius: 0.5rem;
-        /* roundness of the scroll thumb */
-    }
+    list-style: none;
 
     li {
         margin: 0 3rem;
@@ -68,26 +51,27 @@ export default {
         font-size: var.$font-size-regular;
 
         a {
+            position: relative;
+            display: flex;
+            display: flex;
+            gap: 1rem;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            width: 100%;
             background: none;
             border: none;
             color: white;
-            display: flex;
-            padding: 1rem;
-            align-items: center;
-            gap: 1rem;
-            position: relative;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
 
-            > div  {
-                width: 100%;
+            >div {
                 display: flex;
                 gap: 1rem;
                 align-items: center;
-                > span {
-                    text-overflow: ellipsis;
+                width: 100%;
+
+                >span {
                     overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
 

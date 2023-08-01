@@ -1,25 +1,23 @@
 <template>
-  <div
-    id="swap"
-  >
+  <div id="swap">
     <h1>
       Swap your assets
     </h1>
     <p class="infos">
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio quibusdam dolor at mollitia numquam et possimus harum praesentium consequatur reiciendis est aspernatur incidunt, veniam accusamus sint beatae quaerat assumenda eligendi!
+      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio quibusdam dolor at mollitia numquam et possimus
+      harum praesentium consequatur reiciendis est aspernatur incidunt, veniam accusamus sint beatae quaerat assumenda
+      eligendi!
     </p>
     <div>
       <AssetInput
         :asset="assetFrom.asset"
         :amount="assetFrom.amount"
         @amount-changed="assetFrom.amount = $event"
-        @asset-select="modalOpen='assetFrom'"
+        @asset-select="modalOpen = 'assetFrom'"
       />
       <!-- @select="" -->
-      
-      <div
-        class="arrow"
-      >
+
+      <div class="arrow">
         <button @click="invert">
           <i class="fa fa-arrow-up" />&nbsp;
           <i class="fa fa-arrow-down" />
@@ -30,7 +28,7 @@
         :asset="assetTo.asset"
         :amount="assetTo.amount"
         @amount-changed="assetTo.amount = $event"
-        @asset-select="modalOpen='assetTo'"
+        @asset-select="modalOpen = 'assetTo'"
       />
 
       <p class="fees">
@@ -78,7 +76,7 @@ export default {
   methods: {
     invert() {
       const tmp = this.assetFrom.asset;
-      
+
       this.assetFrom.asset = this.assetTo.asset;
       this.assetTo.asset = tmp;
     }
@@ -93,15 +91,18 @@ export default {
   .arrow {
     text-align: center;
     margin: 3rem 0;
+
     .fa {
       font-size: 3rem;
     }
+
     button {
       background: none;
       border: none;
       color: white;
       cursor: pointer;
       transition: color 0.5s;
+
       &:hover {
         color: var.$light-ascent-color;
       }

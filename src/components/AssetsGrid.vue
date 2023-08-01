@@ -23,17 +23,17 @@ export default {
 
 .asset-grid {
     display: grid;
+
+    gap: 1rem;
     grid-template-columns: repeat(12, 1fr);
     list-style: none;
 
-    gap: 1rem;
-    
     li {
         grid-column: span 4;
 
         span {
-            width: 100%;
             overflow: hidden;
+            width: 100%;
             text-overflow: ellipsis;
         }
     }
@@ -45,18 +45,19 @@ export default {
 
     button {
         display: flex;
+        gap: 1rem;
         flex-direction: column;
+        align-items: center;
+        padding: 1rem;
         width: 100%;
         height: 100%;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
+        background-color: var.$light-background-color;
         color: white;
         border: none;
-        background-color: var.$light-background-color;
         border-radius: 0.5rem;
         cursor: pointer;
         transition: background-color 0.5s;
+
         &:hover {
             background-color: var.$very-light-background-color;
         }

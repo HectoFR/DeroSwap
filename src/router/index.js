@@ -1,15 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AssetsView from '../views/AssetsView.vue'
 import SwapView from '../views/SwapView.vue'
 import PoolView from '../views/PoolView.vue'
 import BridgeView from '../views/BridgeView.vue'
 
 const routes = [
-  {
-    path: '/assets',
-    name: 'assets',
-    component: AssetsView
-  },
   {
     path: '/swap',
     name: 'swap',

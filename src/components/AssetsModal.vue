@@ -63,49 +63,52 @@ export default {
 @use "@/assets/variables.scss" as var;
 
 #assets-modal {
-    box-shadow: 3px 3px 10px rgba(0 0 0 / 0.5);
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 3rem;
 
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 3rem;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 3px 3px 10px rgba(0 0 0 / 0.5);
 
     .modal-content {
-        background: var.$background;
-        padding: 4rem;
-        border-radius: 1rem;
         position: relative;
-        max-height: 80%;
         display: flex;
         flex-direction: column;
+        padding: 4rem;
+        max-height: 80%;
+        background: var.$background;
+        border-radius: 1rem;
     }
+
     .close {
         position: absolute;
         top: 0;
         right: 0;
-        transform: translate(50%, -50%);
-        border: var.$ascent-color;
-        background-color: var.$very-light-background-color;
-        border-radius: 50%;
-        width: 3rem;
-        height: 3rem;
         display: flex;
         justify-content: center;
         align-items: center;
-        color: white;
-        font-weight: bold;
+        width: 3rem;
+        height: 3rem;
+        background-color: var.$very-light-background-color;
         font-size: 1.8rem;
+        font-weight: bold;
+        transform: translate(50%, -50%);
+        border: var.$ascent-color;
+        border-radius: 50%;
+        color: white;
         transition: background-color 0.5s;
         cursor: pointer;
+
         &:hover {
             background-color: var.$light-ascent-color;
         }
     }
+
     h2 {
         margin-top: 0;
         color: white;
@@ -113,45 +116,50 @@ export default {
 
     .search-bar {
         display: flex;
+
         input {
             flex: 1;
         }
+
         button {
             padding: 0 1rem;
         }
     }
 
     ul {
+        overflow: auto;
         display: grid;
+        gap: 1rem;
+        flex: 1;
+        padding: 0;
         grid-template-columns: repeat(12, 1fr);
         list-style: none;
-        gap: 1rem;
-        padding: 0;
-        overflow: auto;
-        flex: 1;
 
         li {
             grid-column: span 4;
+
             span {
-                width: 100%;
                 overflow: hidden;
+                width: 100%;
                 text-overflow: ellipsis;
             }
         }
+
         button {
             display: flex;
+            gap: 1rem;
             flex-direction: column;
+            align-items: center;
+            padding: 1rem;
             width: 100%;
             height: 100%;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
+            background-color: var.$light-background-color;
             color: white;
             border: none;
-            background-color: var.$light-background-color;
             border-radius: 0.5rem;
             cursor: pointer;
             transition: background-color 0.5s;
+
             &:hover {
                 background-color: var.$very-light-background-color;
             }

@@ -19,14 +19,14 @@
           <img
             :src="selectedPool.assets.from.img"
             :alt="`${selectedPool.assets.from.name} img`"
-          >
+          />
           {{ selectedPool.assets.from.name }}
           <i class="fa fa-arrow-right" />
           <img
             :src="selectedPool.assets.to.img"
             :alt="`${selectedPool.assets.to.name} img`"
-          >
-          {{selectedPool.assets.to.name }}
+          />
+          {{ selectedPool.assets.to.name }}
         </div>
       </h1>
       <div class="inputs">
@@ -78,9 +78,11 @@ export default {
 
   h1 {
     margin: 0 20%;
+
     div {
       margin-top: 1rem;
     }
+
     img {
       margin-right: 0.5rem;
     }
@@ -92,10 +94,10 @@ export default {
   }
 
   table {
+    overflow: hidden;
     margin: 0 10% 3rem 10%;
     width: 80%;
     border-radius: 1rem;
-    overflow: hidden;
   }
 
   table,
@@ -130,10 +132,10 @@ export default {
 
   .coins {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     gap: 0.5rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     >div {
       display: flex;
@@ -150,8 +152,8 @@ export default {
   .to {
     >div {
       display: flex;
-      align-items: center;
       gap: 0.5rem;
+      align-items: center;
     }
 
     img {
@@ -161,17 +163,17 @@ export default {
   }
 
   .search-bar {
-    display: flex;
-    margin: 4rem 20% 1.5rem 20%;
-    border: 1px solid var.$very-light-background-color;
-    border-radius: 1rem;
-    height: 4rem;
-    overflow: hidden;
-    background-color: var.$light-background-color;
 
     position: sticky;
     top: -1rem;
     z-index: 10;
+    overflow: hidden;
+    display: flex;
+    margin: 4rem 20% 1.5rem 20%;
+    height: 4rem;
+    background-color: var.$light-background-color;
+    border: 1px solid var.$very-light-background-color;
+    border-radius: 1rem;
 
     input {
       flex: 1;
@@ -183,13 +185,13 @@ export default {
 
     button {
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       width: 4rem;
       height: 4rem;
+      background: var.$light-background-color;
       border: none;
       border-left: 1px solid var.$very-light-background-color;
-      background: var.$light-background-color;
       color: white;
       transition: background-color 0.5s;
 
@@ -201,20 +203,23 @@ export default {
 
   .form {
     margin: 0 20%;
+
     h1 {
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      
+      align-items: center;
+
       img {
         width: 3rem;
         height: 3rem;
       }
-      > div {
+
+      >div {
         display: flex;
         align-items: center;
       }
+
       .fa-arrow-right {
         margin: 0 1rem;
       }
@@ -222,11 +227,11 @@ export default {
 
     .inputs {
       margin: 3rem 0;
+
       .asset-input {
         margin: 5rem 0;
       }
     }
   }
-
 }
 </style>
