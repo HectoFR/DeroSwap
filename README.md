@@ -9,4 +9,6 @@ Decentralized Exchange on [DERO Blockchain](https://dero.io)
 
 ![Swap Select](/docs/2.png)
 
-![Pool](/docs/3.png)
+![Confirm](/docs/3.png)
+
+![Pool](/docs/4.png)
