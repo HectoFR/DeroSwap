@@ -37,28 +37,46 @@
         Fees 0.000 {{ assetFrom.asset.name }}
       </p>
       <div class="view-submit-button">
-        <button>
+        <button
+          type="submit"
+          @click="displayConfirmation = true"
+        >
           Swap
         </button>
       </div>
     </div>
-    <AssetsModal
-      v-if="modalOpen"
-      @close="modalOpen = null"
-      @select="this[modalOpen].asset = $event; modalOpen = null"
-    />
+    <transition name="fade-slow">
+      <AssetsModal
+        v-if="modalOpen"
+        @close="modalOpen = null"
+        @select="this[modalOpen].asset = $event; modalOpen = null"
+      />
+    </transition>
+    <transition name="fade-slow">
+      <ConfirmationModal
+        v-if="displayConfirmation"
+        :asset-from="assetFrom.asset"
+        :asset-to="assetTo.asset"
+        :amount="assetFrom.amount"
+        operation="Swap"
+        @close="displayConfirmation = false"
+        @submit="null"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
 import AssetInput from "@/components/AssetInput.vue";
 import AssetsModal from "@/components/AssetsModal.vue";
+import ConfirmationModal from "@/components/ConfirmationModal.vue";
 
 export default {
   name: 'SwapView',
   components: {
     AssetInput,
     AssetsModal,
+    ConfirmationModal
   },
   data() {
     return {
@@ -71,6 +89,7 @@ export default {
         amount: null,
       },
       modalOpen: false,
+      displayConfirmation: false,
     };
   },
   methods: {

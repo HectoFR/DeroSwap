@@ -33,7 +33,11 @@
         </nav>
       </header>
       <main>
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <transition name="fade">
+            <component :is="Component" />
+          </transition>
+        </router-view>
       </main>
     </section>
     <footer>

@@ -1,69 +1,88 @@
 <template>
   <div id="pool">
-    <template v-if="!selectedPool">
-      <h1>
-        Pools
-      </h1>
-      <p class="infos">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio quibusdam dolor at moll.
-      </p>
-      <PoolArray @select="selectedPool = $event" />
-    </template>
-    <div
-      v-else
-      class="form"
-    >
-      <h1>
-        <span>Pool: Add liquidity</span>
-        <div>
-          <img
-            :src="selectedPool.assets.from.img"
-            :alt="`${selectedPool.assets.from.name} img`"
+    <transition name="fade">
+      <div v-if="!selectedPool">
+        <h1>
+          Pools
+        </h1>
+        <p class="infos">
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio quibusdam dolor at moll.
+        </p>
+        <PoolArray @select="selectedPool = $event" />
+      </div>
+      <div
+        v-else
+        class="form"
+      >
+        <h1>
+          <span>Pool: Add liquidity</span>
+          <div>
+            <img
+              :src="selectedPool.assets.from.img"
+              :alt="`${selectedPool.assets.from.name} img`"
+            />
+            {{ selectedPool.assets.from.name }}
+            <i class="fa fa-arrow-right" />
+            <img
+              :src="selectedPool.assets.to.img"
+              :alt="`${selectedPool.assets.to.name} img`"
+            />
+            {{ selectedPool.assets.to.name }}
+          </div>
+        </h1>
+        <div class="inputs">
+          <AssetInput
+            :asset="selectedPool.assets.from"
+            no-select-asset
           />
-          {{ selectedPool.assets.from.name }}
-          <i class="fa fa-arrow-right" />
-          <img
-            :src="selectedPool.assets.to.img"
-            :alt="`${selectedPool.assets.to.name} img`"
+          <AssetInput
+            :asset="selectedPool.assets.to"
+            no-select-asset
           />
-          {{ selectedPool.assets.to.name }}
         </div>
-      </h1>
-      <div class="inputs">
-        <AssetInput
-          :asset="selectedPool.assets.from"
-          no-select-asset
-        />
-        <AssetInput
-          :asset="selectedPool.assets.to"
-          no-select-asset
-        />
+        <p>
+          Estimated fees: 0.000 DERO
+        </p>
+        <div class="view-submit-button">
+          <button @click="displayConfirmation = true">
+            Add to pool
+          </button>
+          <button @click="selectedPool = null">
+            Back to pool's list
+          </button>
+        </div>
       </div>
-      <p>
-        Estimated fees: 0.000 DERO
-      </p>
-      <div class="view-submit-button">
-        <button>
-          Add to pool
-        </button>
-      </div>
-    </div>
+    </transition>
+    <transition name="fade-slow">
+      <ConfirmationModal
+        v-if="displayConfirmation"
+        :asset-from="selectedPool.assets.from"
+        :asset-to="selectedPool.assets.to"
+        :amount="selectedPool.assets.from.amount"
+        operation="Pool"
+        @close="displayConfirmation = false"
+        @submit="null"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
-import PoolArray from "@/components/PoolArray.vue"
-import AssetInput from "@/components/AssetInput.vue"
+import PoolArray from "@/components/PoolArray.vue";
+import AssetInput from "@/components/AssetInput.vue";
+import ConfirmationModal from "@/components/ConfirmationModal.vue";
 
 export default {
   name: 'PoolView',
   components: {
     PoolArray,
     AssetInput,
+    ConfirmationModal,
   },
   data() {
     return {
       selectedPool: null,
+      displayConfirmation: false,
     }
   },
 
@@ -163,7 +182,6 @@ export default {
   }
 
   .search-bar {
-
     position: sticky;
     top: -1rem;
     z-index: 10;
