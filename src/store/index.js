@@ -2,27 +2,27 @@ import { createStore } from 'vuex'
 
 // Decode function for hex dump
 function decode(hex) {
-  var bytes = [];
+  const bytes = [];
 
-  for (var i = 0; i < hex.length - 1; i += 2)
+  for (let i = 0; i < hex.length - 1; i += 2)
     bytes.push(parseInt(hex.substr(i, 2), 16));
 
   return String.fromCharCode.apply(String, bytes);
 }
 
 const TOKEN_IMGS = {
-  DWETH: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023",
-  COCO: "https://seeklogo.com/images/C/cocos-blockchain-expedition-cocos-bcx-logo-A0123AFFED-seeklogo.com.png",
-  DZRX: "https://cryptologos.cc/logos/0x-zrx-logo.png?v=023",
-  DUSDT: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=023",
-  DDAI: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=023",
-  DLINK: "https://cryptologos.cc/logos/chainlink-link-logo.png?v=023",
-  DUSDC: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=023",
-  DWBTC: "https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png?v=023",
-  DFRAX: "https://cryptologos.cc/logos/frax-frax-logo.png?v=023",
-  DgOHM: "https://imgs.search.brave.com/mS-KF2LDb6WXaSTQH7-MbxmuDuEnkwGwNkpgAOEUUsg/rs:fit:40:40:1/g:ce/aHR0cHM6Ly9hc3Nl/dHMuY29pbmdlY2tv/LmNvbS9jb2lucy9p/bWFnZXMvMjExMjkv/bGFyZ2UvdG9rZW5f/d3NPSE1fbG9nby5w/bmc_MTYzODc2NDkw/MA",
-  DERO: "https://imgs.search.brave.com/ZDVXj_uLx1b3331Xfw_wDUWNQYTnf7MCgePV2Ry1u00/rs:fit:40:40:1/g:ce/aHR0cHM6Ly9hc3Nl/dHMuY29pbmdlY2tv/LmNvbS9jb2lucy9p/bWFnZXMvMzUyMi9s/YXJnZS9kZXJvX2xv/Z29fcG5nLnBuZz8x/NTgyMTgwMzkw",
-  DST: "https://stakingcrypto.info/static/assets/coins/dragon-soul-token-logo.png?v=101",
+  DWETH: "/assets/ethereum-eth.png",
+  COCO: "/assets/private-island-coco.png",
+  DZRX: "/assets/0x-zrx.png",
+  DUSDT: "/assets/tether-usdt.png",
+  DDAI: "/assets/dai-dai.png",
+  DLINK: "/assets/chainlink-link.png",
+  DUSDC: "/assets/usd-coin-usdc.png",
+  DWBTC: "/assets/wrapped-bitcoin-wbtc.png",
+  DFRAX: "/assets/frax-frax.png",
+  DgOHM: "/assets/governance-ohm-gohm.png",
+  DERO: "/assets/dero-dero.png",
+  DST: "/assets/dero-seals-dst.png",
 };
 
 export default createStore({
@@ -36,7 +36,7 @@ export default createStore({
   getters: {
     assets(state) {
       /**
-       * Flatten pairs to get an asset list (with img)
+       * Flatten pairs to get an assets list (with img)
        */
       const assets = [];
       const assetsName = [];
