@@ -26,8 +26,11 @@ export default {
     },
     computed: {
         assets() {
-            return this.$store.state.assets;
+            return this.$store.getters.assets;
         }
+    },
+    mounted() {
+        this.$store.dispatch("getSwapPairs");
     }
 }
 </script>

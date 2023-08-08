@@ -55,102 +55,105 @@ export default {
     data() {
         return {
             searchText: "",
-            pairs: [
-                {
-                    id: 1,
-                    assets: {
-                        to: this.$store.state.assets[0],
-                        from: this.$store.state.assets[1],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 1,
-                    assets: {
-                        to: this.$store.state.assets[0],
-                        from: this.$store.state.assets[1],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 2,
-                    assets: {
-                        to: this.$store.state.assets[3],
-                        from: this.$store.state.assets[4],
-                    }
-                },
-                {
-                    id: 1,
-                    assets: {
-                        to: this.$store.state.assets[0],
-                        from: this.$store.state.assets[1],
-                    }
-                },
-            ],
+            // pairs: [
+            //     {
+            //         id: 1,
+            //         assets: {
+            //             to: this.$store.state.assets[0],
+            //             from: this.$store.state.assets[1],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 1,
+            //         assets: {
+            //             to: this.$store.state.assets[0],
+            //             from: this.$store.state.assets[1],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 2,
+            //         assets: {
+            //             to: this.$store.state.assets[3],
+            //             from: this.$store.state.assets[4],
+            //         }
+            //     },
+            //     {
+            //         id: 1,
+            //         assets: {
+            //             to: this.$store.state.assets[0],
+            //             from: this.$store.state.assets[1],
+            //         }
+            //     },
+            // ],
         }
     },
     computed: {
+        pairs() {
+            return this.$store.getters.pairs;
+        },
         filteredPairs() {
             return this.pairs.filter((p) => {
                 const toLower = p.assets.to.name.toLowerCase();

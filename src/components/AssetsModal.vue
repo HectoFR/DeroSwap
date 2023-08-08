@@ -49,10 +49,7 @@ export default {
     computed: {
         assets() {
             const allAssets = [
-                ...this.$store.state.assets,
-                ...this.$store.state.assets, // TODO
-                ...this.$store.state.assets,
-                ...this.$store.state.assets,
+                ...this.$store.getters.assets,
             ];
 
             return allAssets.filter(
