@@ -18,31 +18,55 @@
             </thead>
             <tbody>
                 <tr
-                    v-for="pair in filteredPairs" :key="pair.id"
+                    v-for="pair in filteredPairs" :key="pair.contract"
                     @click="$emit('select', pair)"
                 >
                     <td class="coins">
                         <div>
-                            <img :src="pair.assets.from.img" :alt="`${pair.assets.from.name} img`">
-                            <img :src="pair.assets.to.img" :alt="`${pair.assets.to.name} img`">
+                            <img
+                                :src="`/assets/${pair.assets.from.name}.png`"
+                                :alt="`${pair.assets.from.name} img`"
+                            >
+                            <img
+                                :src="`/assets/${pair.assets.to.name}.png`"
+                                :alt="`${pair.assets.to.name} img`"
+                            >
                         </div>
                         {{ pair.assets.from.name }}:{{ pair.assets.to.name }}
                     </td>
-                    <td>1 {{ pair.assets.from.name }} &asymp; 12345 {{ pair.assets.to.name }}</td>
+
+                    <td v-if="pair.assets.to.realValue != 0">
+                        1 {{ pair.assets.from.name }} &asymp;
+                        {{(
+                                pair.assets.to.realValue / pair.assets.from.realValue).toFixed(
+                                $store.state.digits[pair.assets.to.name]
+                        )}}
+                        {{ pair.assets.to.name }}
+                    </td>
+                    <td v-else>
+                        No liquidity
+                    </td>
+
                     <td class="from">
                         <div>
-                            <img :src="pair.assets.from.img" :alt="`${pair.assets.from.name} img`">
-                            1234.53646
+                            <img
+                                :src="`/assets/${pair.assets.from.name}.png`"
+                                :alt="`${pair.assets.from.name} img`"
+                            >
+                            {{ pair.assets.from.realValue.toFixed($store.state.digits[pair.assets.from.name]) }}
                         </div>
                     </td>
                     <td class="to">
                         <div>
-                            <img :src="pair.assets.to.img" :alt="`${pair.assets.to.name} img`">
-                            1234.53646
+                            <img
+                                :src="`/assets/${pair.assets.to.name}.png`"
+                                :alt="`${pair.assets.to.name} img`"
+                            >
+                            {{ pair.assets.to.realValue.toFixed($store.state.digits[pair.assets.to.name]) }}
                         </div>
                     </td>
-                    <td>0.0 %</td>
-                    <td>0.5 %</td>
+                    <td>0.0 %<!-- TODO --></td>
+                    <td>{{ pair.fees/100 }} %</td>
                 </tr>
             </tbody>
         </table>
@@ -152,7 +176,7 @@ export default {
     },
     computed: {
         pairs() {
-            return this.$store.getters.pairs;
+            return this.$store.state.pairs;
         },
         filteredPairs() {
             return this.pairs.filter((p) => {

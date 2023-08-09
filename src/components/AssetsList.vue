@@ -7,7 +7,10 @@
             <li v-for="asset in assets" :key="asset.name">
                 <a>
                     <div>
-                        <img :src="asset.img" :alt="`${asset.name} image`">
+                        <img
+                            :src="`/assets/${asset.name}.png`"
+                            :alt="`${asset.name} image`"
+                        >
                         <span>{{ asset.name }}</span>
                     </div>
                     <div v-if="asset.balance">Balance: {{ asset.balance }}</div>

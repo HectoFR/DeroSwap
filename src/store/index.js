@@ -1,53 +1,39 @@
 import { createStore } from 'vuex'
 
-// Decode function for hex dump
-function decode(hex) {
-  const bytes = [];
+// Decode function for hex dump: for bridge
+// function decode(hex) {
+//   const bytes = [];
 
-  for (let i = 0; i < hex.length - 1; i += 2)
-    bytes.push(parseInt(hex.substr(i, 2), 16));
+//   for (let i = 0; i < hex.length - 1; i += 2)
+//     bytes.push(parseInt(hex.substr(i, 2), 16));
 
-  return String.fromCharCode.apply(String, bytes);
-}
-
-const TOKEN_IMGS = {
-  DWETH: "/assets/ethereum-eth.png",
-  COCO: "/assets/private-island-coco.png",
-  DZRX: "/assets/0x-zrx.png",
-  DUSDT: "/assets/tether-usdt.png",
-  DDAI: "/assets/dai-dai.png",
-  DLINK: "/assets/chainlink-link.png",
-  DUSDC: "/assets/usd-coin-usdc.png",
-  DWBTC: "/assets/wrapped-bitcoin-wbtc.png",
-  DFRAX: "/assets/frax-frax.png",
-  DgOHM: "/assets/governance-ohm-gohm.png",
-  DERO: "/assets/dero-dero.png",
-  DST: "/assets/dero-seals-dst.png",
-};
+//   return String.fromCharCode.apply(String, bytes);
+// }
 
 export default createStore({
   state: {
     pairs: [],
+    digits: {},
     websocket: null,
     messageHandlers: {},
     currentRequestId: 1,
     connectionState: 0, // 3 = refused, 2 = connected, 1 = waiting authorization, 0 = unknown, -1 = xswd server not running
+    address: "",
   },
   getters: {
     assets(state) {
       /**
-       * Flatten pairs to get an assets list (with img)
+       * Flatten pairs to get an assets list
        */
       const assets = [];
       const assetsName = [];
 
       state.pairs.forEach((p) => {
-        [p.name1, p.name2].forEach((a) => {
+        [p.assets.from.name, p.assets.to.name].forEach((a) => {
           if (!assetsName.includes(a)) {
             assetsName.push(a)
             assets.push({
               name: a,
-              img: TOKEN_IMGS[a],
             })
           }
         });
@@ -55,24 +41,6 @@ export default createStore({
 
       return assets;
     },
-    pairs(state) {
-      /**
-       * Format and add img to pairs
-       */
-      return state.pairs.map((p) => ({
-          contract: p.contract,
-          assets: {
-            from: {
-              name: p.name1,
-              img: TOKEN_IMGS[p.name1]
-            },
-            to: {
-              name: p.name2,
-              img: TOKEN_IMGS[p.name2]
-            },
-          }
-      }));
-    }
   },
   mutations: {
     setMessageHandler(state, {key, handler}) {
@@ -83,6 +51,10 @@ export default createStore({
     }
   },
   actions: {
+    async start(store) {
+      await store.dispatch("openWebSocket");
+      await store.dispatch("getAddress");
+    },
     openWebSocket(store) {
       return new Promise((resolve) => {
         /**
@@ -169,7 +141,7 @@ export default createStore({
       return store.dispatch("sendRpcAndWait", {
         method: "DERO.GetSC",
         params: {
-          scid: '0000000000000000000000000000000000000000000000000000000000000001',
+          scid: '0000000000000000000000000000000000000000000000000000000000000001', // keystore scid
           keysstring: ["keystore"],
         }
       }).then((sc) => {
@@ -177,9 +149,9 @@ export default createStore({
         keystoreScid = "80" + keystoreScid.substring(2, 64);
 
         const baseKeys = [
-          "k:dex.bridge.erc20", // encoded Ethereum bridge address
+          // "k:dex.bridge.erc20", // encoded Ethereum bridge address
           "k:dex.swap.registry", // dex registry address
-          "k:dex.bridge.registry", // reverse bridge registry 
+          // "k:dex.bridge.registry", // reverse bridge registry 
         ];
         
         return store.dispatch("sendRpcAndWait", {
@@ -189,9 +161,10 @@ export default createStore({
             keysstring: baseKeys,
           }
         }).then((keystores) => {
-          store.state.ercBridgeKey = decode(keystores.valuesstring[0]); // Utility of decode ?
-          store.state.swapKey = keystores.valuesstring[1];
-          store.state.bridgeKey = keystores.valuesstring[2];
+          // store.state.ercBridgeKey = decode(keystores.valuesstring[0]); // Utility of decode ?
+          // store.state.swapKey = keystores.valuesstring[1];
+          store.state.swapKey = keystores.valuesstring[0];
+          // store.state.bridgeKey = keystores.valuesstring[2];
           return true;
         })
       })
@@ -217,17 +190,58 @@ export default createStore({
           variables: true,
         }
       }).then((result) => {
-        // This request returns a lot of informations, we only need variable starting with "p:"
+        // Pairs starts with p:
         store.state.pairs = Object.entries(result.stringkeys)
-          .filter((entry) => entry[0].startsWith("p:"))
-          .map((entry) => {
-            const [key, value] = entry;
+          .filter(([key]) => key.startsWith("p:"))
+          .map(([key, value]) => {
             const [name1, name2] = key.substring(2).split(":");
-
-            return { name1, name2, contract: String(value) };
+            return {
+              contract: String(value),
+              assets: {
+                from: {
+                  name: name1,
+                },
+                to: {
+                  name: name2,
+                },
+              }
+            };
           });
+        
+        // Digits starts with t: and ends with :d
+        const tmpDigits = {};
+        Object.entries(result.stringkeys)
+        .filter(([key]) => key.startsWith("t:") && key.endsWith(":d"))
+        .forEach(([key, value]) => {
+          const assetName = key.split(":")[1];
+          tmpDigits[assetName] = value;
+        });
+        store.state.digits = tmpDigits;
+
+        // Balances?
+        store.state.pairs.map((p) => {
+          const params = {
+            scid: p.contract,
+            code: false,
+            variables: true,
+          };
+          return store.dispatch(
+            "sendRpcAndWait",
+            { method: "DERO.GetSC", params}
+          ).then((t) => {
+            const sk = t.stringkeys;
+            p.assets.from.realValue = sk.val1 / Math.pow(10, store.state.digits[p.assets.from.name]);
+            p.assets.to.realValue = sk.val2 / Math.pow(10, store.state.digits[p.assets.to.name]);
+            p.fees = sk.fee;
+          })
+        })
         return store.state.pairs;
       })
     },
+    getAddress(store) {
+      return store.dispatch("sendRpcAndWait", { method: "GetAddress" }).then((res) => {
+        store.state.address = res.address;
+      })
+    }
   },
 })

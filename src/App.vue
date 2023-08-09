@@ -20,7 +20,7 @@
         <div v-if="connectionState === -1">
           Start the XSWD Server on your DERO Wallet:
           <ol>
-            <li>Open your wallet (cli for example)</li>
+            <li>Open your wallet (cli for example) in remote mode</li>
             <li>Select "16: Start XSWD Server"</li>
             <li>Click on the button to ask for the authorization</li>
           </ol>
@@ -38,7 +38,7 @@
         <div class="view-submit-button">
           <button
             type="submit"
-            @click="$store.dispatch('openWebSocket')"
+            @click="$store.dispatch('start')"
           >
             Ask authorization
           </button>
@@ -51,10 +51,10 @@
       <AssetsList  class="top"/>
       <div class="bottom">
         <div class="states">
-          <span>✔ Daemon</span>
-          <span>⨉ Wallet</span>
+          <span v-if="false">✔ Daemon</span>
+          <span><i class="fa fa-check" /> Wallet</span>
         </div>
-        <div class="address">bc1qxy2kgdygjrs...rf2493pkkfjhx0wlh</div>
+        <div class="address">{{ shortAddress }}</div>
         <!-- <router-link
           class="see-more"
           :to="{name: 'assets'}"
@@ -108,10 +108,23 @@ export default {
   computed: {
     connectionState() {
       return this.$store.state.connectionState;
+    },
+    shortAddress() {
+      const fullAddress = this.$store.state.address;
+
+      if (!fullAddress) {
+        return "Connecting..."
+      }
+      
+      let address = fullAddress.substring(0, 15);
+      address += "..."
+      address += fullAddress.substring(fullAddress.length-15, fullAddress.length);
+
+      return address
     }
   },
   mounted() {
-    this.$store.dispatch("openWebSocket");
+    this.$store.dispatch("start");
   },
   methods: {
   }
@@ -135,8 +148,8 @@ $very-light-background-color: lighten(#13295b, 20%);
 
 #connecting {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 
   background: url("@/assets/img/bg_modal.svg");
   background-color: var.$background;
@@ -145,58 +158,58 @@ $very-light-background-color: lighten(#13295b, 20%);
   font-size: 2rem;
 
   .content {
-    width: 75%;
-    height: 75%;
-    border-radius: 1rem;
-    background-color: var.$background;
-    border: 1px solid white;
-    color: white;
-    padding: 3rem 10rem;
-    box-shadow: 0 1rem 5rem 0 rgba(var.$white, 0.2);
     overflow: auto;
 
     // Gérer le responsive
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding: 3rem 10rem;
+    width: 75%;
+    height: 75%;
+    background-color: var.$background;
+    border-radius: 1rem;
+    border: 1px solid white;
+    color: white;
+    box-shadow: 0 1rem 5rem 0 rgba(var.$white, 0.2);
   }
   h1 {
     margin: 0 0 3rem 0;
-    text-align: center;
     font-size: 5rem;
+    text-align: center;
   }
 
   .how-to {
     margin: 4rem 0;
     ol {
-      width: fit-content;
       margin: 4rem auto;
+      width: fit-content;
       li {
         margin: 0.5rem 0;
       }
     }
   }
   .refused {
-    color: var.$red;
-    text-align: center;
     font-size: 3rem;
     font-weight: bold;
+    text-align: center;
+    color: var.$red;
   }
 
   .view-submit-button {
     margin-top: 5rem;
     button {
-      font-size: 1.5rem;
       padding: 2rem 1rem;
       width: 35%;
+      font-size: 1.5rem;
     }
   }
 
   .auth-pending {
     margin: 2rem 0;
-    text-align: center;
     font-size: 3rem;
     font-weight: bold;
+    text-align: center;
 
     animation-name: color-change;
     animation-duration: 2s;

@@ -18,7 +18,7 @@
             <div class="center">
                 <div class="from">
                     <h3>
-                        <img :src="assetFrom.img" />
+                        <img :src="`/assets/${assetFrom.name}.png`" />
                         {{ assetFrom.name }}
                     </h3>
                     <div>1100</div>
@@ -29,7 +29,7 @@
                 <i class="fa fa-arrow-down" />
                 <div class="to">
                     <h3>
-                        <img :src="assetTo.img" />
+                        <img :src="`/assets/${assetTo.name}.png`" />
                         {{ assetTo.name }}
                     </h3>
                     <div>200</div>

@@ -121,6 +121,9 @@ aside {
             display: flex;
             gap: 1rem;
             justify-content: center;
+            .fa {
+                margin-right: 0.5rem;
+            }
         }
         
         .see-more {

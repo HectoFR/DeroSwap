@@ -7,7 +7,7 @@
                 @click="$emit('asset-select')"
             >
                 <template v-if="asset">
-                    <img :src="asset.img" />
+                    <img :src="`/assets/${asset.name}.png`" />
                     {{ asset.name }}
                 </template>
             </component>

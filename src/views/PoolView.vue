@@ -18,13 +18,13 @@
           <span>Pool: Add liquidity</span>
           <div>
             <img
-              :src="selectedPool.assets.from.img"
+              :src="`/assets/${selectedPool.assets.from.name}.png`"
               :alt="`${selectedPool.assets.from.name} img`"
             />
             {{ selectedPool.assets.from.name }}
             <i class="fa fa-arrow-right" />
             <img
-              :src="selectedPool.assets.to.img"
+              :src="`/assets/${selectedPool.assets.to.name}.png`"
               :alt="`${selectedPool.assets.to.name} img`"
             />
             {{ selectedPool.assets.to.name }}
@@ -119,11 +119,14 @@ export default {
     border-radius: 1rem;
   }
 
-  table,
-  th,
-  td {
+  table {
     border: 1px solid var.$ascent-color;
     border-collapse: collapse;
+  }
+  th {
+    border-bottom: 1px solid var.$ascent-color;
+    border-left: 1px solid lighten(var.$light-background-color, 5%);
+    border-right: 1px solid lighten(var.$light-background-color, 5%);
   }
 
   td,

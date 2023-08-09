@@ -2,7 +2,10 @@
     <ul class="asset-grid">
         <li v-for="asset in assets" :key="asset.name">
             <button @click="$emit('select', asset)">
-                <img :src="asset.img" :alt="`${asset.name} image`">
+                <img
+                    :src="`/assets/${asset.name}.png`"
+                    :alt="`${asset.name} image`"
+                >
                 <span>{{ asset.name }}</span>
             </button>
         </li>
