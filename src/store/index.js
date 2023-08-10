@@ -240,7 +240,9 @@ export default createStore({
     },
     getAddress(store) {
       return store.dispatch("sendRpcAndWait", { method: "GetAddress" }).then((res) => {
-        store.state.address = res.address;
+        if (res?.address) {
+          store.state.address = res.address;
+        }
       })
     }
   },

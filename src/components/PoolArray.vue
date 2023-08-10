@@ -53,7 +53,7 @@
                                 :src="`/assets/${pair.assets.from.name}.png`"
                                 :alt="`${pair.assets.from.name} img`"
                             >
-                            {{ pair.assets.from.realValue.toFixed($store.state.digits[pair.assets.from.name]) }}
+                            {{ pair.assets.from.realValue?.toFixed($store.state.digits[pair.assets.from.name]) }}
                         </div>
                     </td>
                     <td class="to">
@@ -62,7 +62,7 @@
                                 :src="`/assets/${pair.assets.to.name}.png`"
                                 :alt="`${pair.assets.to.name} img`"
                             >
-                            {{ pair.assets.to.realValue.toFixed($store.state.digits[pair.assets.to.name]) }}
+                            {{ pair.assets.to.realValue?.toFixed($store.state.digits[pair.assets.to.name]) }}
                         </div>
                     </td>
                     <td>0.0 %<!-- TODO --></td>
