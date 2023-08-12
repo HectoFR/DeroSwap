@@ -19,28 +19,18 @@ export default createStore({
     currentRequestId: 1,
     connectionState: 0, // 3 = refused, 2 = connected, 1 = waiting authorization, 0 = unknown, -1 = xswd server not running
     address: "",
+    userBalances: {},
+
+    assets: {},
   },
   getters: {
-    assets(state) {
-      /**
-       * Flatten pairs to get an assets list
-       */
-      const assets = [];
-      const assetsName = [];
-
-      state.pairs.forEach((p) => {
-        [p.assets.from.name, p.assets.to.name].forEach((a) => {
-          if (!assetsName.includes(a)) {
-            assetsName.push(a)
-            assets.push({
-              name: a,
-            })
-          }
-        });
+    assetsByScid(state) {
+      const newPairs = {}
+      Object.values(state.assets).forEach((p) => {
+        newPairs[p.scid] = p;
       })
-
-      return assets;
-    },
+      return newPairs;
+    }
   },
   mutations: {
     setMessageHandler(state, {key, handler}) {
@@ -68,7 +58,7 @@ export default createStore({
         store.state.websocket.onmessage = (message) => {
           const data = JSON.parse(message.data)
           Object.values(store.state.messageHandlers).forEach((handler) => {
-            handler(data)
+            handler(data);
           });
 
           if (data.accepted === true) {
@@ -88,6 +78,12 @@ export default createStore({
         store.state.websocket.onopen = () => {
           store.dispatch("askAppAuthorization");
           store.state.connectionState = 1;
+        };
+
+        store.state.websocket.onclose = () => {
+          if (store.state.connectionState > 0) {
+            store.state.connectionState = -1;
+          }
         };
       })
     },
@@ -190,36 +186,45 @@ export default createStore({
           variables: true,
         }
       }).then((result) => {
-        // Pairs starts with p:
-        store.state.pairs = Object.entries(result.stringkeys)
-          .filter(([key]) => key.startsWith("p:"))
-          .map(([key, value]) => {
-            const [name1, name2] = key.substring(2).split(":");
-            return {
-              contract: String(value),
-              assets: {
-                from: {
-                  name: name1,
-                },
-                to: {
-                  name: name2,
-                },
-              }
-            };
-          });
-        
-        // Digits starts with t: and ends with :d
-        const tmpDigits = {};
-        Object.entries(result.stringkeys)
-        .filter(([key]) => key.startsWith("t:") && key.endsWith(":d"))
-        .forEach(([key, value]) => {
-          const assetName = key.split(":")[1];
-          tmpDigits[assetName] = value;
-        });
-        store.state.digits = tmpDigits;
 
-        // Balances?
-        store.state.pairs.map((p) => {
+        // ========================== NEW2 ==========================
+        // ========================== END NEW2 ==========================
+        const assetsList = {};
+        const pairs = [];
+
+        // Reversed so we can create assetsList before getting pairs
+        Object.entries(result.stringkeys).reverse()
+        .filter(([key]) => key.startsWith("t:") || key.startsWith("p:"))
+        .map(([key, value]) => {
+          const assetName = key.split(":")[1];
+          
+          if (!assetsList[assetName]) {
+            assetsList[assetName] = { name: assetName };
+          }
+
+          if (key.startsWith("t:") && key.endsWith(":d")) {
+            // Digits starts with t: and ends with :d
+            assetsList[assetName].digit = value;
+          } else if (key.startsWith("t:") && key.endsWith(":c")) {
+            // Asset scid starts with t: and ends with :c
+            assetsList[assetName].scid = value;
+          } else if (key.startsWith("p:")) {
+            const [name1, name2] = key.substring(2).split(":");
+            pairs.push({
+              contract: value,
+              assets: {
+                from: name1,
+                to: name2,
+              }
+            });
+          }
+        })
+        store.state.assets = assetsList;
+        store.state.pairs = pairs;
+        
+
+        // Contract balances
+        let promisesCB = store.state.pairs.map((p) => {
           const params = {
             scid: p.contract,
             code: false,
@@ -230,12 +235,27 @@ export default createStore({
             { method: "DERO.GetSC", params}
           ).then((t) => {
             const sk = t.stringkeys;
-            p.assets.from.realValue = sk.val1 / Math.pow(10, store.state.digits[p.assets.from.name]);
-            p.assets.to.realValue = sk.val2 / Math.pow(10, store.state.digits[p.assets.to.name]);
+            p.fromRealValue = sk.val1 / Math.pow(10, store.state.digits[p.assets.from.name]);
+            p.toRealValue = sk.val2 / Math.pow(10, store.state.digits[p.assets.to.name]);
             p.fees = sk.fee;
           })
         })
-        return store.state.pairs;
+
+        // User balances
+        let promisesUB = Object.values(store.state.assets).map((a) => {
+          const params = {
+            scid: a.scid,
+          };
+          return store.dispatch(
+            "sendRpcAndWait",
+            { method: "GetBalance", params}
+          ).then((res) => {
+            a.balance = res.balance;
+          })
+        })
+
+
+        return Promise.all([...promisesCB, ...promisesUB]).then(() => store.state.pairs);
       })
     },
     getAddress(store) {

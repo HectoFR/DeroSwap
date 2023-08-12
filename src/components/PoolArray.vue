@@ -24,24 +24,24 @@
                     <td class="coins">
                         <div>
                             <img
-                                :src="`/assets/${pair.assets.from.name}.png`"
-                                :alt="`${pair.assets.from.name} img`"
+                                :src="`/assets/${pair.assets.from}.png`"
+                                :alt="`${pair.assets.from} img`"
                             >
                             <img
-                                :src="`/assets/${pair.assets.to.name}.png`"
-                                :alt="`${pair.assets.to.name} img`"
+                                :src="`/assets/${pair.assets.to}.png`"
+                                :alt="`${pair.assets.to} img`"
                             >
                         </div>
-                        {{ pair.assets.from.name }}:{{ pair.assets.to.name }}
+                        {{ pair.assets.from }}:{{ pair.assets.to }}
                     </td>
 
-                    <td v-if="pair.assets.to.realValue != 0">
-                        1 {{ pair.assets.from.name }} &asymp;
+                    <td v-if="pair.toRealValue != 0">
+                        1 {{ pair.assets.from }} &asymp;
                         {{(
-                                pair.assets.to.realValue / pair.assets.from.realValue).toFixed(
-                                $store.state.digits[pair.assets.to.name]
+                                pair.toRealValue / pair.fromRealValue).toFixed(
+                                assets[pair.assets.to].digit
                         )}}
-                        {{ pair.assets.to.name }}
+                        {{ pair.assets.to }}
                     </td>
                     <td v-else>
                         No liquidity
@@ -50,19 +50,19 @@
                     <td class="from">
                         <div>
                             <img
-                                :src="`/assets/${pair.assets.from.name}.png`"
-                                :alt="`${pair.assets.from.name} img`"
+                                :src="`/assets/${pair.assets.from}.png`"
+                                :alt="`${pair.assets.from} img`"
                             >
-                            {{ pair.assets.from.realValue?.toFixed($store.state.digits[pair.assets.from.name]) }}
+                            {{ pair.assets.fromRealValue?.toFixed(assets[pair.assets.from].digit) }}
                         </div>
                     </td>
                     <td class="to">
                         <div>
                             <img
-                                :src="`/assets/${pair.assets.to.name}.png`"
-                                :alt="`${pair.assets.to.name} img`"
+                                :src="`/assets/${pair.assets.to}.png`"
+                                :alt="`${pair.assets.to} img`"
                             >
-                            {{ pair.assets.to.realValue?.toFixed($store.state.digits[pair.assets.to.name]) }}
+                            {{ pair.toRealValue?.toFixed(assets[pair.assets.to].digit) }}
                         </div>
                     </td>
                     <td>0.0 %<!-- TODO --></td>
@@ -79,109 +79,19 @@ export default {
     data() {
         return {
             searchText: "",
-            // pairs: [
-            //     {
-            //         id: 1,
-            //         assets: {
-            //             to: this.$store.state.assets[0],
-            //             from: this.$store.state.assets[1],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 1,
-            //         assets: {
-            //             to: this.$store.state.assets[0],
-            //             from: this.$store.state.assets[1],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 2,
-            //         assets: {
-            //             to: this.$store.state.assets[3],
-            //             from: this.$store.state.assets[4],
-            //         }
-            //     },
-            //     {
-            //         id: 1,
-            //         assets: {
-            //             to: this.$store.state.assets[0],
-            //             from: this.$store.state.assets[1],
-            //         }
-            //     },
-            // ],
         }
     },
     computed: {
         pairs() {
             return this.$store.state.pairs;
         },
+        assets() {
+            return this.$store.state.assets;
+        },
         filteredPairs() {
             return this.pairs.filter((p) => {
-                const toLower = p.assets.to.name.toLowerCase();
-                const fromLower = p.assets.from.name.toLowerCase();
+                const toLower = p.assets.to.toLowerCase();
+                const fromLower = p.assets.from.toLowerCase();
                 const searchLower = this.searchText.toLowerCase();
 
                 return toLower.includes(searchLower) || fromLower.includes(searchLower);

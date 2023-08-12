@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="assets.length && assetFrom.asset"
+    v-if="assetTo.asset && assetFrom.asset"
     id="swap"
   >
     <h1>
@@ -91,17 +91,17 @@ export default {
   },
   computed: {
       assets() {
-          return this.$store.getters.assets;
+          return this.$store.state.assets;
       }
   },
   mounted() {
     this.assetFrom = {
-      asset: this.assets[0],
+      asset: Object.values(this.assets)[0],
       amount: null,
     };
 
     this.assetTo = {
-      asset: this.assets[1],
+      asset: Object.values(this.assets)[1],
       amount: null,
     };
   },

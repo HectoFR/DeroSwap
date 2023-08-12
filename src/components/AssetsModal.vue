@@ -48,11 +48,7 @@ export default {
     },
     computed: {
         assets() {
-            const allAssets = [
-                ...this.$store.getters.assets,
-            ];
-
-            return allAssets.filter(
+            return Object.values(this.$store.state.assets).filter(
                 (a) => {
                     console.log(a.name.toLowerCase(), this.searchText.toLowerCase(), a.name.toLowerCase().includes(this.searchText.toLowerCase()));
                     return a.name.toLowerCase().includes(this.searchText.toLowerCase());

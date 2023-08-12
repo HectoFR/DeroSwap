@@ -18,16 +18,16 @@
           <span>Pool: Add liquidity</span>
           <div>
             <img
-              :src="`/assets/${selectedPool.assets.from.name}.png`"
-              :alt="`${selectedPool.assets.from.name} img`"
+              :src="`/assets/${selectedPool.assets.from}.png`"
+              :alt="`${selectedPool.assets.from} img`"
             />
-            {{ selectedPool.assets.from.name }}
+            {{ selectedPool.assets.from }}
             <i class="fa fa-arrow-right" />
             <img
-              :src="`/assets/${selectedPool.assets.to.name}.png`"
-              :alt="`${selectedPool.assets.to.name} img`"
+              :src="`/assets/${selectedPool.assets.to}.png`"
+              :alt="`${selectedPool.assets.to} img`"
             />
-            {{ selectedPool.assets.to.name }}
+            {{ selectedPool.assets.to }}
           </div>
         </h1>
         <div class="inputs">
@@ -54,11 +54,11 @@
       </div>
     </transition>
     <transition name="fade-slow">
+      <!-- :amount="selectedPool.assets.from.amount" -->
       <ConfirmationModal
         v-if="displayConfirmation"
         :asset-from="selectedPool.assets.from"
         :asset-to="selectedPool.assets.to"
-        :amount="selectedPool.assets.from.amount"
         operation="Pool"
         @close="displayConfirmation = false"
         @submit="null"
@@ -85,6 +85,11 @@ export default {
       displayConfirmation: false,
     }
   },
+  computed: {
+    assets() {
+      return this.$store.state.assets;
+    }
+  }
 
 }
 </script>

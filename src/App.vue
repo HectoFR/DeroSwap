@@ -1,104 +1,120 @@
 <template>
-  <div
-    id="connecting"
-    v-if="connectionState !== 2"
-  >
-    <div class="content">
-      <h1>DeroSwap</h1>
-      <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt nesciunt natus cumque, quas facere perspiciatis? Quis non maiores praesentium voluptates, placeat aut impedit, exercitationem soluta quo, delectus iste officiis officia.</p>
-    
-      <div 
-        class="auth-pending"
-        v-if="connectionState === 1"
-      >
-        Waiting for the wallet authorization...
-      </div>
-      <div
-        v-else-if="connectionState === -1 || connectionState === 3"
-        class="how-to"
-      >
-        <div v-if="connectionState === -1">
-          Start the XSWD Server on your DERO Wallet:
-          <ol>
-            <li>Open your wallet (cli for example) in remote mode</li>
-            <li>Select "16: Start XSWD Server"</li>
-            <li>Click on the button to ask for the authorization</li>
-          </ol>
-          <p>
-            You may have to accept additionnal authorizations for some requests while using this app
-            (ex: reading balance).
-          </p>
+  <transition name="fade">
+    <div
+      id="connecting"
+      v-if="connectionState !== 2"
+    >
+      <div class="content">
+        <h1>DeroSwap</h1>
+        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt nesciunt natus cumque, quas facere perspiciatis? Quis non maiores praesentium voluptates, placeat aut impedit, exercitationem soluta quo, delectus iste officiis officia.</p>
+      
+        <div 
+          class="auth-pending"
+          v-if="connectionState === 1"
+        >
+          Waiting for the wallet authorization...
         </div>
         <div
-          v-else
-          class="refused"
+          v-else-if="connectionState === -1 || connectionState === 3"
+          class="how-to"
         >
-          Authorization refused :(
-        </div>
-        <div class="view-submit-button">
-          <button
-            type="submit"
-            @click="$store.dispatch('start')"
+          <div v-if="connectionState === -1">
+            Start the XSWD Server on your DERO Wallet:
+            <ol>
+              <li>Open your wallet (cli for example) in remote mode</li>
+              <li>Select "16: Start XSWD Server"</li>
+              <li>Click on the button to ask for the authorization</li>
+            </ol>
+            <p>
+              You may have to accept additionnal authorizations for some requests while using this app
+              (ex: reading balance).
+            </p>
+          </div>
+          <div
+            v-else
+            class="refused"
           >
-            Ask authorization
-          </button>
+            Authorization refused :(
+          </div>
+          <div class="view-submit-button">
+            <button
+              type="submit"
+              @click="$store.dispatch('start')"
+            >
+              <!-- Add a toast -->
+              Ask authorization
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div v-else>
-    <aside>
-      <AssetsList  class="top"/>
-      <div class="bottom">
-        <div class="states">
-          <span v-if="false">✔ Daemon</span>
-          <span><i class="fa fa-check" /> Wallet</span>
+    <div
+      v-else-if="!Object.values($store.state.assets).length"
+      id="app_loader"
+    >
+      <LogoLoader />
+      <p>Waiting for wallet permissions...</p>
+    </div>
+    <div v-else>
+      <aside>
+        <AssetsList  class="top"/>
+        <div class="bottom">
+          <div class="states">
+            <span v-if="false">✔ Daemon</span>
+            <span><i class="fa fa-check" /> Wallet</span>
+          </div>
+          <div class="address">{{ shortAddress }}</div>
+          <!-- <router-link
+            class="see-more"
+            :to="{name: 'assets'}"
+          >
+            See more assets
+          </router-link> -->
         </div>
-        <div class="address">{{ shortAddress }}</div>
-        <!-- <router-link
-          class="see-more"
-          :to="{name: 'assets'}"
-        >
-          See more assets
-        </router-link> -->
-      </div>
-    </aside>
-    <section>
-      <header>
-        <nav>
-          <ul>
-            <li>
-              <router-link :to="{ name: 'swap', }">Swap</router-link>
-            </li>
-            <li>
-              <router-link :to="{ name: 'pool', }">Pool</router-link>
-            </li>
-            <!-- <li>
-              <router-link :to="{ name: 'bridge', }">Bridge</router-link>
-            </li> -->
-          </ul>
-        </nav>
-      </header>
-      <main>
-        <router-view v-slot="{ Component }">
-          <transition name="fade">
-            <component :is="Component" />
-          </transition>
-        </router-view>
-      </main>
-    </section>
-    <footer>
-    </footer>
-  </div>
+      </aside>
+      <section>
+        <header>
+          <nav>
+            <ul>
+              <li>
+                <router-link :to="{ name: 'swap', }">Swap</router-link>
+              </li>
+              <li>
+                <router-link :to="{ name: 'pool', }">Pool</router-link>
+              </li>
+              <!-- <li>
+                <router-link :to="{ name: 'bridge', }">Bridge</router-link>
+              </li> -->
+            </ul>
+          </nav>
+        </header>
+        <main>
+          <router-view v-slot="{ Component }">
+            <transition name="fade">
+              <component :is="Component" />
+            </transition>
+          </router-view>
+          <PermissionToast />
+        </main>
+      </section>
+      <footer>
+      </footer>
+    </div>
+  </transition>
 </template>
 
 <script>
 import AssetsList from "@/components/AssetsList.vue";
+import PermissionToast from "@/components/PermissionToast.vue";
+import LogoLoader from "@/components/LogoLoader.vue";
+
 
 export default {
   name: "App",
   components: {
     AssetsList,
+    LogoLoader,
+    PermissionToast,
   },
   data() {
     return {
@@ -124,7 +140,10 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch("start");
+    this.$store.dispatch("start").then(() => {
+      console.log("cc");
+      this.$store.dispatch("getSwapPairs");
+    });
   },
   methods: {
   }
@@ -214,6 +233,18 @@ $very-light-background-color: lighten(#13295b, 20%);
     animation-name: color-change;
     animation-duration: 2s;
     animation-iteration-count: infinite;
+  }
+}
+
+#app_loader {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  p {
+    font-size: 2rem;
   }
 }
 </style>

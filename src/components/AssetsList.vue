@@ -4,7 +4,7 @@
             My assets
         </h2>
         <ul class="assets-list">
-            <li v-for="asset in assets" :key="asset.name">
+            <li v-for="asset in Object.values(assets)" :key="asset.name">
                 <a>
                     <div>
                         <img
@@ -13,7 +13,12 @@
                         >
                         <span>{{ asset.name }}</span>
                     </div>
-                    <div v-if="asset.balance">Balance: {{ asset.balance }}</div>
+                    <div v-if="asset.balance !== undefined">
+                        Balance:
+                        {{
+                            (asset.balance / Math.pow(10, asset.digit)).toFixed(asset.digit)
+                        }}
+                    </div>
                 </a>
             </li>
         </ul>
@@ -29,11 +34,10 @@ export default {
     },
     computed: {
         assets() {
-            return this.$store.getters.assets;
+            return this.$store.state.assets;
         }
     },
     mounted() {
-        this.$store.dispatch("getSwapPairs");
     }
 }
 </script>

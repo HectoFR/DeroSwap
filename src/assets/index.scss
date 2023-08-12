@@ -36,16 +36,16 @@ html, body, #app {
 }
 
 html {
-    background: var.$white;
+    background: #040f29;
     font-size: 62.5%; // = 10px
 }
   
 body {
     margin: 0;
-    background: #040f29;
     font-family: "Blender", sans-serif;
     font-size: var.$font-size-regular;
     color: var.$white;
+    overflow: hidden;
 
     * {
         z-index: 2;
@@ -61,9 +61,10 @@ h1 {
     font-size: var.$font-size-xx-large;
 }
 
-#app > div:first-child {
+#app > div {
     display: flex;
-    height: 100%;
+    height: 100vh;
+    width: 100vw;
     > section {
         position: relative;
 
@@ -285,7 +286,14 @@ main {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#app > .fade-enter, #app > .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .fade-slow-enter-active,
@@ -298,4 +306,11 @@ main {
 .fade-slow-enter-from,
 .fade-slow-leave-to {
   opacity: 0;
+}
+
+.fade-slow-enter, .fade-slow-leave-to /* .fade-leave-active in <2.1.8 */ {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
