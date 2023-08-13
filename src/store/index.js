@@ -264,7 +264,7 @@ export default createStore({
             "sendRpcAndWait",
             { method: "GetBalance", params}
           ).then((res) => {
-            a.balance = res.balance;
+            a.balance = res ? res.balance : null;
           })
         })
 
