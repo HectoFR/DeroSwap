@@ -39,7 +39,7 @@
           <div class="view-submit-button">
             <button
               type="submit"
-              @click="$store.dispatch('start')"
+              @click="tryStart"
             >
               <!-- Add a toast -->
               Ask authorization
@@ -140,12 +140,14 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch("start").then(() => {
-      console.log("cc");
-      this.$store.dispatch("getSwapPairs");
-    });
+    this.tryStart()
   },
   methods: {
+    tryStart() {
+      this.$store.dispatch("start").then(() => {
+        this.$store.dispatch("getSwapPairs");
+      });
+    }
   }
 }
 </script>

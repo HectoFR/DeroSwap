@@ -5,18 +5,16 @@
             :class="{ small: !toastText, }"
         >
             <LogoLoader
-                v-if="loader"
+                v-if="toastText"
                 size="32px"
-                @click="loader = !loader"
             />
             <img
                 v-else
                 class="logo"
                 src="/favicon.ico"
-                @click="loader = !loader"
             />
 
-            <span v-if="toastText">
+            <span>
                 {{ toastText }}
             </span>
         </div>
@@ -33,20 +31,30 @@ export default {
     },
     data() {
         return {
-            loader: false
+            loader: false,
         };
     },
     computed: {
         toastText() {
-            // eslint-disable-next-line
-            if (true) {
+            if (!this.firstPendingPerm) {
                 return "";
             }
-
-            const perm = "GetBalance";
-            return `Waiting wallet response for "${perm}"`;
+            return `Waiting wallet response for "${this.firstPendingPerm}"`;
+        },
+        firstPendingPerm() {
+            const perms = Object.values(this.$store.state.pendingRequestsPerms);
+            return perms.length ? perms[0] : null;
         }
     },
+    methods: {
+        test() {
+            if (this.perm) {
+                this.perm = null;
+            } else {
+                this.perm = "GetBalance";
+            }
+        }
+    }
 }
 </script>
 
@@ -65,7 +73,6 @@ export default {
     position: absolute;
     bottom: 0;
     display: flex;
-    gap: 1rem;
     color: white;
     padding: 1rem;
     border-radius: 2rem;
@@ -75,17 +82,44 @@ export default {
     background: var.$light-background-color;
     border: 1px solid #9592cd;
     z-index: 10;
+    width: 50%;
+    white-space: nowrap;
+
+    span {
+        width: 0;
+        overflow: hidden;
+        margin-left: 1rem;
+    }
 
     &:not(&.small) {
         background: url("@/assets/img/test.svg");
         background-size: cover;
         background-position: 0 23rem;
-        min-width: 50%;
-        left: 50%;
-        transform: translateX(-50%);
+        right: 50%;
+        transform: translateX(50%);
+
+        transition: right 0.5s linear, width 0.3s linear 0.7s;
+        span {
+            transition: width 0.5s linear 0.7s, margin-left 0.1s linear 0.7s;
+        }
+
+        span {
+            width: fit-content;
+        }
     }
     &.small {
-        right: 3rem;
+        right: 6rem;
+        width: 53px;
+        transform: translateX(50%);
+
+        transition: right 0.5s linear 0.5s, width 0.3s linear;
+        span {
+            transition: width 0.5s linear, margin-left 0.1s linear;
+        }
+
+        span {
+            margin-left: 0;
+        }
     }
   }
 

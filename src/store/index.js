@@ -13,13 +13,14 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     pairs: [],
-    digits: {},
     websocket: null,
     messageHandlers: {},
     currentRequestId: 1,
     connectionState: 0, // 3 = refused, 2 = connected, 1 = waiting authorization, 0 = unknown, -1 = xswd server not running
     address: "",
     userBalances: {},
+
+    pendingRequestsPerms: {},
 
     assets: {},
   },
@@ -111,12 +112,18 @@ export default createStore({
       const currentId = store.state.currentRequestId;
       const keyHandler = `req${currentId}`
 
+      let timeout = null;
+
       return new Promise((resolve) => {
         store.commit("setMessageHandler", {
             key: keyHandler,
             handler(message) {
               if (message.id == currentId) {
+                if (timeout) {
+                  clearTimeout(timeout)
+                }
                 resolve(message.result);
+                delete store.state.pendingRequestsPerms[currentId]
                 store.commit("removeMessageHandler", keyHandler);
               }
             }
@@ -126,6 +133,13 @@ export default createStore({
           id: currentId,
           params,
         });
+        
+        if (!method.startsWith("DERO")) {  // daemon doesn't need perm
+          timeout = setTimeout(() => {
+            store.state.pendingRequestsPerms[currentId] = method
+          }, 2000)
+        }
+
         store.state.currentRequestId += 1;
       });
     },
@@ -235,8 +249,8 @@ export default createStore({
             { method: "DERO.GetSC", params}
           ).then((t) => {
             const sk = t.stringkeys;
-            p.fromRealValue = sk.val1 / Math.pow(10, store.state.digits[p.assets.from.name]);
-            p.toRealValue = sk.val2 / Math.pow(10, store.state.digits[p.assets.to.name]);
+            p.fromRealValue = sk.val1 / Math.pow(10, store.state.assets[p.assets.from].digit);
+            p.toRealValue = sk.val2 / Math.pow(10, store.state.assets[p.assets.to].digit);
             p.fees = sk.fee;
           })
         })
