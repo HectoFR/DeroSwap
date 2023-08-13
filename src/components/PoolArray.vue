@@ -53,7 +53,7 @@
                                 :src="`/assets/${pair.assets.from}.png`"
                                 :alt="`${pair.assets.from} img`"
                             >
-                            {{ pair.assets.fromRealValue?.toFixed(assets[pair.assets.from].digit) }}
+                            {{ pair.fromRealValue?.toFixed(assets[pair.assets.from].digit) }}
                         </div>
                     </td>
                     <td class="to">

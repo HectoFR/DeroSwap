@@ -12,11 +12,32 @@
                 v-else
                 class="logo"
                 src="/favicon.ico"
+                @click="dropdownDisplayed = !dropdownDisplayed"
             />
-
             <span>
                 {{ toastText }}
             </span>
+            <div
+                v-if="!toastText && dropdownDisplayed"
+                class="dropdown"
+            >
+                <h2>Refused<br />permissions</h2>
+                <ul>
+                    <li
+                        v-for="(val, key) in $store.state.refusedPermissions"
+                        :key="key"
+                    >
+                        <i class="fa fa-times" />{{ key }}
+                    </li>
+                    <li
+                        v-if="Object.keys($store.state.refusedPermissions).length === 0"
+                        class="text-center"
+                    >
+                        None
+                    </li>
+                </ul>
+                <div class="triangle" />
+            </div>
         </div>
     </div>
 </template>
@@ -32,6 +53,7 @@ export default {
     data() {
         return {
             loader: false,
+            dropdownDisplayed: false,
         };
     },
     computed: {
@@ -133,6 +155,44 @@ export default {
     width: calc(32px - calc(3px * 2));
     height: calc(32px - calc(3px * 2));
     margin: 3px;
+  }
+
+  .dropdown {
+    position: absolute;
+    bottom: calc(100% + 2rem);
+    right: 0;
+    background: var.$light-background-color;
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid #9592cd;
+    h2 {
+        margin: 0 0 1rem 0;
+        text-align: center;
+    }
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .fa {
+        width: 3rem;
+        text-align: center;
+        &.fa-times {
+            color: var.$red;
+        }
+    }
+
+    .triangle {
+        position: absolute;
+        top: 100%;
+        right: 2rem;
+        display : inline-block;
+        height : 0;
+        width : 0;
+        border-top : 10px solid #9592cd;
+        border-right : 5px solid transparent;
+        border-left : 5px solid transparent;
+    }
   }
 }
 </style>

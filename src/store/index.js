@@ -21,6 +21,7 @@ export default createStore({
     userBalances: {},
 
     pendingRequestsPerms: {},
+    refusedPermissions: {},
 
     assets: {},
   },
@@ -121,6 +122,12 @@ export default createStore({
               if (message.id == currentId) {
                 if (timeout) {
                   clearTimeout(timeout)
+                }
+
+                if (!method.startsWith("DERO")) {
+                  if ([-32044, -32043].includes(message.error?.code)) {
+                    store.state.refusedPermissions[method] = false;
+                  }
                 }
                 resolve(message.result);
                 delete store.state.pendingRequestsPerms[currentId]
@@ -264,7 +271,7 @@ export default createStore({
             "sendRpcAndWait",
             { method: "GetBalance", params}
           ).then((res) => {
-            a.balance = res ? res.balance : null;
+            a.balance = res ? res.balance : undefined;
           })
         })
 
