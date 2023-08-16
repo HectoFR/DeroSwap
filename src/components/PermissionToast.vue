@@ -84,7 +84,7 @@ export default {
 @use "@/assets/variables.scss" as var;
 
 #toast_container {
-  position: absolute;
+  position: fixed;
   bottom: 3rem;
   left: 0;
   width: 100%;

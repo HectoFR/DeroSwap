@@ -13,10 +13,10 @@
                         >
                         <span>{{ asset.name }}</span>
                     </div>
-                    <div v-if="asset.balance !== undefined">
+                    <div v-if="asset.realBalance !== undefined">
                         Balance:
                         {{
-                            (asset.balance / Math.pow(10, asset.digit)).toFixed(asset.digit)
+                            asset.realBalance.toFixed(asset.digit)
                         }}
                     </div>
                 </a>

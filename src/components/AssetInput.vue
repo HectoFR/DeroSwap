@@ -18,12 +18,22 @@
                 :value="amount"
                 placeholder="0"
                 @change="$emit('amount-changed', $event.target.valueAsNumber)"
+                :class="{ 'no-buttons': noButtons }"
+
             />
-            <div class="amount-selector">
-                <button>25%</button>
-                <button>50%</button>
-                <button>75%</button>
-                <button>Max (112122)</button>
+            <div
+                v-if="!noButtons"
+                class="amount-selector"
+            >
+                <button @click="percent(25)">25%</button>
+                <button @click="percent(50)">50%</button>
+                <button @click="percent(75)">75%</button>
+                <button @click="percent(100)">
+                    Max
+                    <span v-if="asset.realBalance !== undefined">
+                        ({{ asset.realBalance.toFixed(asset.digit) }})
+                    </span>
+                </button>
             </div>
         </div>
     </div>
@@ -36,7 +46,14 @@ export default {
         asset: Object,
         amount: Number,
         noSelectAsset: Boolean,
+        noButtons: Boolean,
     },
+    methods: {
+        percent(val) {
+            const amount = this.asset.atomicBalance * (val/100);
+            this.$emit('amount-changed', amount / Math.pow(10, this.asset.digit));
+        }
+    }
 }
 </script>
 
@@ -87,6 +104,9 @@ export default {
         color: white;
         border: 1px solid lighten(var.$light-background-color, 35%);
         border-top-right-radius: 1rem;
+        &.no-buttons {
+            border-bottom-right-radius: 1rem;
+        }
         outline: none;
     }
 

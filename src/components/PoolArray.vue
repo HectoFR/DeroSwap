@@ -24,24 +24,21 @@
                     <td class="coins">
                         <div>
                             <img
-                                :src="`/assets/${pair.assets.from}.png`"
-                                :alt="`${pair.assets.from} img`"
+                                :src="`/assets/${pair.asset1.name}.png`"
+                                :alt="`${pair.asset1.name} img`"
                             >
                             <img
-                                :src="`/assets/${pair.assets.to}.png`"
-                                :alt="`${pair.assets.to} img`"
+                                :src="`/assets/${pair.asset2.name}.png`"
+                                :alt="`${pair.asset2.name} img`"
                             >
                         </div>
-                        {{ pair.assets.from }}:{{ pair.assets.to }}
+                        {{ pair.asset1.name }}:{{ pair.asset2.name }}
                     </td>
 
-                    <td v-if="pair.toRealValue != 0">
-                        1 {{ pair.assets.from }} &asymp;
-                        {{(
-                                pair.toRealValue / pair.fromRealValue).toFixed(
-                                assets[pair.assets.to].digit
-                        )}}
-                        {{ pair.assets.to }}
+                    <td v-if="pair.realVal2 != 0">
+                        1 {{ pair.asset1.name }} &asymp;
+                        {{ pair.realRatio.toFixed(pair.asset2.digit) }}
+                        {{ pair.asset2.name }}
                     </td>
                     <td v-else>
                         No liquidity
@@ -50,19 +47,19 @@
                     <td class="from">
                         <div>
                             <img
-                                :src="`/assets/${pair.assets.from}.png`"
-                                :alt="`${pair.assets.from} img`"
+                                :src="`/assets/${pair.asset1.name}.png`"
+                                :alt="`${pair.asset1.name} img`"
                             >
-                            {{ pair.fromRealValue?.toFixed(assets[pair.assets.from].digit) }}
+                            {{ pair.realVal1?.toFixed(pair.asset1.digit) }}
                         </div>
                     </td>
                     <td class="to">
                         <div>
                             <img
-                                :src="`/assets/${pair.assets.to}.png`"
-                                :alt="`${pair.assets.to} img`"
+                                :src="`/assets/${pair.asset2.name}.png`"
+                                :alt="`${pair.asset2.name} img`"
                             >
-                            {{ pair.toRealValue?.toFixed(assets[pair.assets.to].digit) }}
+                            {{ pair.realVal2?.toFixed(pair.asset2.digit) }}
                         </div>
                     </td>
                     <td>0.0 %<!-- TODO --></td>
@@ -90,8 +87,8 @@ export default {
         },
         filteredPairs() {
             return this.pairs.filter((p) => {
-                const toLower = p.assets.to.toLowerCase();
-                const fromLower = p.assets.from.toLowerCase();
+                const toLower = p.asset2.name.toLowerCase();
+                const fromLower = p.asset1.name.toLowerCase();
                 const searchLower = this.searchText.toLowerCase();
 
                 return toLower.includes(searchLower) || fromLower.includes(searchLower);

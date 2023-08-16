@@ -18,23 +18,27 @@
             <div class="center">
                 <div class="from">
                     <h3>
-                        <img :src="`/assets/${assetFrom.name}.png`" />
-                        {{ assetFrom.name }}
+                        <img :src="`/assets/${assetFrom.asset.name}.png`" />
+                        {{ assetFrom.asset.name }}
                     </h3>
-                    <div>1100</div>
+                    <div>{{ assetFrom.amount }}</div>
                     <div>
-                        Balance: <del>3254</del> <i class="fa fa-arrow-right" /> 2154
+                        Balance:
+                        <del>{{ assetFrom.asset.realBalance.toFixed(assetFrom.asset.digit) }}</del>
+                        <i class="fa fa-arrow-right" /> {{ newRealBalanceFrom }}
                     </div>
                 </div>
                 <i class="fa fa-arrow-down" />
                 <div class="to">
                     <h3>
-                        <img :src="`/assets/${assetTo.name}.png`" />
-                        {{ assetTo.name }}
+                        <img :src="`/assets/${assetTo.asset.name}.png`" />
+                        {{ assetTo.asset.name }}
                     </h3>
-                    <div>200</div>
+                    <div>{{ assetTo.amount }}</div>
                     <div>
-                        Balance: <del>0</del> <i class="fa fa-arrow-right" /> 200
+                        Balance:
+                        <del>{{ assetTo.asset.realBalance.toFixed(assetTo.asset.digit) }}</del>
+                        <i class="fa fa-arrow-right" /> {{ newRealBalanceTo }}
                     </div>
                 </div>
                 <div class="view-submit-button">
@@ -67,7 +71,18 @@ export default {
         }
     },
     computed: {
-
+        newRealBalanceFrom() {
+            const atomicAmount = this.assetFrom.amount * Math.pow(10, this.assetFrom.asset.digit)
+            return (
+                (this.assetFrom.asset.atomicBalance - atomicAmount) / Math.pow(10, this.assetFrom.asset.digit)
+            ).toFixed(this.assetFrom.asset.digit);
+        },
+        newRealBalanceTo() {
+            const atomicAmount = this.assetTo.amount * Math.pow(10, this.assetTo.asset.digit)
+            return (
+                (this.assetTo.asset.atomicBalance + atomicAmount) / Math.pow(10, this.assetTo.asset.digit)
+            ).toFixed(this.assetTo.asset.digit);
+        },
     }
 }
 </script>

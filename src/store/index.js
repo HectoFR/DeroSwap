@@ -1,4 +1,5 @@
-import { createStore } from 'vuex'
+import { createStore } from "vuex"
+import { Asset, Pair } from "@/models"
 
 // Decode function for hex dump: for bridge
 // function decode(hex) {
@@ -220,7 +221,7 @@ export default createStore({
           const assetName = key.split(":")[1];
           
           if (!assetsList[assetName]) {
-            assetsList[assetName] = { name: assetName };
+            assetsList[assetName] = new Asset(assetName);
           }
 
           if (key.startsWith("t:") && key.endsWith(":d")) {
@@ -231,13 +232,10 @@ export default createStore({
             assetsList[assetName].scid = value;
           } else if (key.startsWith("p:")) {
             const [name1, name2] = key.substring(2).split(":");
-            pairs.push({
-              contract: value,
-              assets: {
-                from: name1,
-                to: name2,
-              }
-            });
+
+            pairs.push(new Pair(
+              value, assetsList[name1], assetsList[name2]
+            ))
           }
         })
         store.state.assets = assetsList;
@@ -256,8 +254,10 @@ export default createStore({
             { method: "DERO.GetSC", params}
           ).then((t) => {
             const sk = t.stringkeys;
-            p.fromRealValue = sk.val1 / Math.pow(10, store.state.assets[p.assets.from].digit);
-            p.toRealValue = sk.val2 / Math.pow(10, store.state.assets[p.assets.to].digit);
+            // p.fromRealValue = sk.val1 / Math.pow(10, p.asset1.digit);
+            // p.toRealValue = sk.val2 / Math.pow(10, p.assets2.digit);
+            p.val1 = sk.val1
+            p.val2 = sk.val2
             p.fees = sk.fee;
           })
         })
@@ -271,7 +271,8 @@ export default createStore({
             "sendRpcAndWait",
             { method: "GetBalance", params}
           ).then((res) => {
-            a.balance = res ? res.balance : undefined;
+            console.log(res);
+            a.atomicBalance = 100; //res?.balance;
           })
         })
 

@@ -24,7 +24,7 @@
                 />
             </div>
             <AssetsGrid
-                :assets="assets"
+                :assets="filteredAssets"
                 @select="$emit('select', $event)"
             />
         </div>
@@ -40,6 +40,7 @@ export default {
         AssetsGrid,
     },
     props: {
+        assets: Array,
     },
     data() {
         return {
@@ -47,10 +48,12 @@ export default {
         }
     },
     computed: {
-        assets() {
-            return Object.values(this.$store.state.assets).filter(
+        formattedType() {
+            return this.type.replace("asset", "").toLowerCase();
+        },
+        filteredAssets() {
+            return Object.values(this.assets).filter(
                 (a) => {
-                    console.log(a.name.toLowerCase(), this.searchText.toLowerCase(), a.name.toLowerCase().includes(this.searchText.toLowerCase()));
                     return a.name.toLowerCase().includes(this.searchText.toLowerCase());
                 }
             );

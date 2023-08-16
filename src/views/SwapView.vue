@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="assetTo.asset && assetFrom.asset"
+    v-if="to.asset && from.asset"
     id="swap"
   >
     <h1>
@@ -13,10 +13,10 @@
     </p>
     <div>
       <AssetInput
-        :asset="assetFrom.asset"
-        :amount="assetFrom.amount"
-        @amount-changed="assetFrom.amount = $event"
-        @asset-select="modalOpen = 'assetFrom'"
+        :asset="from.asset"
+        :amount="from.amount"
+        @amount-changed="from.amount = $event; amountFromChanged()"
+        @asset-select="modalOpen = 'from'"
       />
       <!-- @select="" -->
 
@@ -28,23 +28,33 @@
       </div>
 
       <AssetInput
-        :asset="assetTo.asset"
-        :amount="assetTo.amount"
-        @amount-changed="assetTo.amount = $event"
-        @asset-select="modalOpen = 'assetTo'"
+        :asset="to.asset"
+        :amount="to.amount"
+        @amount-changed="to.amount = $event; amountToChanged()"
+        @asset-select="modalOpen = 'to'"
+        no-buttons
       />
 
-      <p class="fees">
-        1 {{ assetFrom.asset.name }} = 0.0000000020221321312 {{ assetTo.asset.name }}
-        <br />
-        Fees 0.000 {{ assetFrom.asset.name }}
-      </p>
+      <div
+        v-if="!isNaN(currentRealRatio)"
+        class="fees"
+      >
+        1 {{ from.asset.name }} &asymp; {{ currentRealRatio }} {{ to.asset.name }}
+        <div
+          v-if="from.amount"
+          :style="{ color: slippageColor }"
+        >
+          Slippage = {{ slippage < .001 ? 'less than 0,001' : slippage }}%
+        </div>
+        <!-- TODO Fees {{ from.amount * (currentPair.fees/1000)}} DERO -->
+      </div>
       <div class="view-submit-button">
         <button
           type="submit"
           @click="displayConfirmation = true"
+          :disabled="isNaN(currentRealRatio)"
         >
-          Swap
+          {{ isNaN(currentRealRatio) ? "No liquidity in pool" : "Swap" }}
         </button>
       </div>
     </div>
@@ -53,14 +63,16 @@
         v-if="modalOpen"
         @close="modalOpen = null"
         @select="this[modalOpen].asset = $event; modalOpen = null"
+        :type="modalOpen"
+        :assets="assetsTo"
       />
     </transition>
     <transition name="fade-slow">
       <ConfirmationModal
         v-if="displayConfirmation"
-        :asset-from="assetFrom.asset"
-        :asset-to="assetTo.asset"
-        :amount="assetFrom.amount"
+        :asset-from="from"
+        :asset-to="to"
+        :amount="from.amount"
         operation="Swap"
         @close="displayConfirmation = false"
         @submit="null"
@@ -83,8 +95,8 @@ export default {
   },
   data() {
     return {
-      assetFrom: {},
-      assetTo: {},
+      from: {},
+      to: {},
       modalOpen: false,
       displayConfirmation: false,
     };
@@ -92,25 +104,101 @@ export default {
   computed: {
       assets() {
           return this.$store.state.assets;
+      },
+      currentPair() {
+        return this.$store.state.pairs.find((p) => (
+          p.asset1.name === this.from.asset.name && p.asset2.name === this.to.asset.name
+          || p.asset2.name === this.from.asset.name && p.asset1.name === this.to.asset.name
+        ))
+      },
+      assetsTo() {
+        if (this.modalOpen === "from") {
+          return Object.values(this.assets)
+        } else {
+          const fromName = this.from.asset.name;
+
+          const compatibleAssets = [];
+          this.$store.state.pairs.forEach((p) => {
+            if (p.asset1.name == fromName) {
+              compatibleAssets.push(p.asset2);
+            } else if (p.asset2.name == fromName) {
+              compatibleAssets.push(p.asset1);
+            }
+          })
+
+          return compatibleAssets;
+        }
+      },
+      inverted() {
+        return this.currentPair.asset1.name !== this.from.asset.name;
+      },
+      currentRealRatio() {
+        let ratio = null;
+
+        if (this.inverted) {
+          ratio = 1 / this.currentPair.realRatio;
+        } else {
+          ratio = this.currentPair.realRatio;
+        }
+
+        return ratio.toFixed(this.to.asset.digit);
+      },
+      slippage() {
+        const realAmountFrom = this.from.amount * Math.pow(10, this.from.asset.digit)
+        const contractVal = this.inverted ? this.currentPair.val2 : this.currentPair.val1;
+        const slippage = 100 - (1 / (1 + realAmountFrom / contractVal) * 100);
+        return Math.round((slippage || 0) * 1000) / 1000;
+      },
+      slippageColor() {
+        if (this.slippage > 25) {
+          return "red";
+        } else if (this.slippage > 10) {
+          return "orange";
+        } else {
+          return undefined;
+        }
       }
   },
+  watch: {
+    "from.asset.name"() {
+      if(!this.to.asset) {
+        this.to.asset = this.assetsTo[0];
+      }
+      
+      const notFound = !this.assetsTo.some((a) => a.name === this.to.asset.name)
+      if (notFound) {
+        this.to.asset = this.assetsTo[0];
+      }
+    },
+  },
   mounted() {
-    this.assetFrom = {
-      asset: Object.values(this.assets)[0],
-      amount: null,
-    };
-
-    this.assetTo = {
+    this.from = {
       asset: Object.values(this.assets)[1],
       amount: null,
     };
   },
   methods: {
     invert() {
-      const tmp = this.assetFrom.asset;
+      const tmp = this.from.asset;
+      this.from.asset = this.to.asset;
+      this.to.asset = tmp;
+    },
+    amountFromChanged() {
+      // With slippage
+      const amount = this.from.amount;
+      const valueFrom = this.inverted ? this.currentPair.val2 : this.currentPair.val1;
+      const valueTo = this.inverted ? this.currentPair.val1 : this.currentPair.val2;
+      const digitsFrom = this.from.asset.digit;
+      const digitsTo = this.to.asset.digit;
 
-      this.assetFrom.asset = this.assetTo.asset;
-      this.assetTo.asset = tmp;
+      const amountToWithSlippage = Math.floor(
+        ((amount * Math.pow(10, digitsFrom)) * valueTo) / (valueFrom + amount* Math.pow(10, digitsFrom))
+      ) / Math.pow(10, digitsTo);
+      this.to.amount = amountToWithSlippage;
+    },
+    amountToChanged() {
+      const ratio = this.inverted ? 1 / this.currentPair.realRatio : this.currentPair.realRatio;
+      this.from.amount = this.to.amount / ratio;
     }
   }
 }

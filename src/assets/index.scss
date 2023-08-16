@@ -178,6 +178,7 @@ main {
     overflow: auto;
     flex: 1;
     padding: 2rem;
+    position: relative;
     > div {
         margin: 0 20%;
         h1 {
@@ -208,10 +209,14 @@ main {
       border: 1px solid var.$light-background-color;
       border-radius: 1rem;
       color: white;
-      cursor: pointer;
       transition: background-color 0.5s;
-      &:hover {
+      &:not(:disabled):hover {
+        cursor: pointer;
         background-color: var.$light-ascent-color;
+      }
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
       }
     }
     button:nth-of-type(2) {
@@ -290,14 +295,12 @@ main {
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.25s ease;
 }
 
-#app > .fade-enter, #app > .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .fade-slow-enter-active,
@@ -305,16 +308,7 @@ main {
   transition: opacity 0.5s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to,
 .fade-slow-enter-from,
 .fade-slow-leave-to {
   opacity: 0;
-}
-
-.fade-slow-enter, .fade-slow-leave-to /* .fade-leave-active in <2.1.8 */ {
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
