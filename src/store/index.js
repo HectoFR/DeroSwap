@@ -130,7 +130,7 @@ export default createStore({
                     store.state.refusedPermissions[method] = false;
                   }
                 }
-                resolve(message.result);
+                resolve(message.result || message.error);
                 delete store.state.pendingRequestsPerms[currentId]
                 store.commit("removeMessageHandler", keyHandler);
               }
@@ -270,8 +270,8 @@ export default createStore({
           return store.dispatch(
             "sendRpcAndWait",
             { method: "GetBalance", params}
-          ).then((res) => {
-            console.log(res);
+          ).then(() => {
+            // console.log(res);
             a.atomicBalance = 100; //res?.balance;
           })
         })
@@ -285,6 +285,51 @@ export default createStore({
         if (res?.address) {
           store.state.address = res.address;
         }
+      })
+    },
+    getRandomAddress(store) {
+      return store.dispatch("sendRpcAndWait", { method: "DERO.GetRandomAddress" })
+    },
+    async getEstimatedGasFees(store, { asset1, atomicAmountFrom, pairScId }) {
+      const randomAddress = (await store.dispatch("getRandomAddress")).address[0]
+
+      const params = {
+        sc_rpc: [
+          { name: "entrypoint", datatype: "S", value: "Swap" },
+          { name: "SC_ID", datatype: "H", value: pairScId },
+          { name: "SC_ACTION", datatype: "U", value: 0 },
+        ],
+        transfers: [
+          { scid: asset1.scid, destination: randomAddress, burn: atomicAmountFrom },
+        ],
+        signer: store.state.address,
+      };
+
+      const gasEstimate = await store.dispatch(
+        "sendRpcAndWait", {
+          method: "DERO.GetGasEstimate", params
+      })
+      return gasEstimate.gasstorage/ 100000
+    },
+    async swap(store, { asset1, atomicAmountFrom, pairScId }) {
+      const randomAddress = (await store.dispatch("getRandomAddress")).address[0];
+      const fees = await store.dispatch("getEstimatedGasFees", {
+        asset1, atomicAmountFrom, pairScId
+      }) * 100000;
+
+      const params = {
+        scid: pairScId,
+        ringsize: 2,
+        sc_rpc: [{ name: "entrypoint", datatype: "S", value: "Swap" }],
+        transfers: [
+          { scid: asset1.scid, destination: randomAddress, burn: atomicAmountFrom },
+        ],
+        fees,
+      };
+
+      return await store.dispatch(
+        "sendRpcAndWait", {
+          method: "transfer", params
       })
     }
   },

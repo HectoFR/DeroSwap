@@ -1,14 +1,14 @@
 <template>
   <div id="pool">
     <transition name="fade">
-      <div v-if="!selectedPool">
+      <div v-if="!selectedPair">
         <h1>
           Pools
         </h1>
         <p class="infos">
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio quibusdam dolor at moll.
         </p>
-        <PoolArray @select="selectedPool = $event" />
+        <PoolArray @select="selectedPair = $event" />
       </div>
       <div
         v-else
@@ -18,26 +18,30 @@
           <span>Pool: Add liquidity</span>
           <div>
             <img
-              :src="`/assets/${selectedPool.assets.from}.png`"
-              :alt="`${selectedPool.assets.from} img`"
+              :src="`/assets/${selectedPair.asset1.name}.png`"
+              :alt="`${selectedPair.asset1.name} img`"
             />
-            {{ selectedPool.assets.from }}
+            {{ selectedPair.asset1.name }}
             <i class="fa fa-arrow-right" />
             <img
-              :src="`/assets/${selectedPool.assets.to}.png`"
-              :alt="`${selectedPool.assets.to} img`"
+              :src="`/assets/${selectedPair.asset2.name}.png`"
+              :alt="`${selectedPair.asset2.name} img`"
             />
-            {{ selectedPool.assets.to }}
+            {{ selectedPair.asset2.name }}
           </div>
         </h1>
         <div class="inputs">
           <AssetInput
-            :asset="selectedPool.assets.from"
+            :asset="selectedPair.asset1"
             no-select-asset
+            :amount="amountFrom"
+            @amount-changed="amountFrom = $event; amountFromChanged()"
           />
           <AssetInput
-            :asset="selectedPool.assets.to"
+            :asset="selectedPair.asset2"
             no-select-asset
+            :amount="amountTo"
+            @amount-changed="amountTo = $event; amountToChanged()"
           />
         </div>
         <p>
@@ -47,18 +51,18 @@
           <button @click="displayConfirmation = true">
             Add to pool
           </button>
-          <button @click="selectedPool = null">
+          <button @click="selectedPair = null">
             Back to pool's list
           </button>
         </div>
       </div>
     </transition>
     <transition name="fade-slow">
-      <!-- :amount="selectedPool.assets.from.amount" -->
+      <!-- :amount="selectedPair.asset1.amount" -->
       <ConfirmationModal
         v-if="displayConfirmation"
-        :asset-from="selectedPool.assets.from"
-        :asset-to="selectedPool.assets.to"
+        :asset-from="selectedPair.asset1"
+        :asset-to="selectedPair.asset2"
         operation="Pool"
         @close="displayConfirmation = false"
         @submit="null"
@@ -81,13 +85,23 @@ export default {
   },
   data() {
     return {
-      selectedPool: null,
+      selectedPair: null,
       displayConfirmation: false,
+      amountFrom: 0,
+      amoutTo: 0,
     }
   },
   computed: {
     assets() {
       return this.$store.state.assets;
+    }
+  },
+  methods: {
+    amountFromChanged() {
+
+    },
+    amountToChanged() {
+      
     }
   }
 

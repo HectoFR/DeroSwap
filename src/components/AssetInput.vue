@@ -104,10 +104,12 @@ export default {
         color: white;
         border: 1px solid lighten(var.$light-background-color, 35%);
         border-top-right-radius: 1rem;
+        height: 5.4rem; // Meeeh
+        outline: none;
+
         &.no-buttons {
             border-bottom-right-radius: 1rem;
         }
-        outline: none;
     }
 
     .amount-selector {

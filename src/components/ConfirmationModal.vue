@@ -15,6 +15,15 @@
                 <i class="fa fa-times" />
             </button>
             <h2>{{operation}} - Confirm the operation</h2>
+            
+            <div class="gas-fees">
+                Pool fees: {{ poolFees.toFixed(assetTo.asset.digit) }} {{ assetTo.asset.name }}
+                <br />
+                Gas fees: {{ gasFees }} DERO
+                <br />
+                Slippage: {{ slippage }} %
+            </div>
+
             <div class="center">
                 <div class="from">
                     <h3>
@@ -23,7 +32,7 @@
                     </h3>
                     <div>{{ assetFrom.amount }}</div>
                     <div>
-                        Balance:
+                        Est. balance:
                         <del>{{ assetFrom.asset.realBalance.toFixed(assetFrom.asset.digit) }}</del>
                         <i class="fa fa-arrow-right" /> {{ newRealBalanceFrom }}
                     </div>
@@ -34,9 +43,9 @@
                         <img :src="`/assets/${assetTo.asset.name}.png`" />
                         {{ assetTo.asset.name }}
                     </h3>
-                    <div>{{ assetTo.amount }}</div>
+                    <div>{{ amountToWithFees.toFixed(assetTo.asset.digit) }}</div>
                     <div>
-                        Balance:
+                        Est. balance:
                         <del>{{ assetTo.asset.realBalance.toFixed(assetTo.asset.digit) }}</del>
                         <i class="fa fa-arrow-right" /> {{ newRealBalanceTo }}
                     </div>
@@ -62,12 +71,16 @@ export default {
     props: {
         assetFrom: Object,
         assetTo: Object,
-        amountFrom: Number,
+        currentPair: Object,
+        slippage: Number,
         operation: String,
     },
     data() {
         return {
-            searchText: ""
+            searchText: "",
+            poolFees: 0,
+            gasFees: 0,
+            amountToWithFees: 0,
         }
     },
     computed: {
@@ -78,11 +91,22 @@ export default {
             ).toFixed(this.assetFrom.asset.digit);
         },
         newRealBalanceTo() {
-            const atomicAmount = this.assetTo.amount * Math.pow(10, this.assetTo.asset.digit)
+            const atomicAmount = this.amountToWithFees * Math.pow(10, this.assetTo.asset.digit)
             return (
                 (this.assetTo.asset.atomicBalance + atomicAmount) / Math.pow(10, this.assetTo.asset.digit)
             ).toFixed(this.assetTo.asset.digit);
         },
+    },
+    async mounted() {
+        this.amountToWithFees = (this.assetTo.amount * (10000 - this.currentPair.fees)) / 10000;
+
+        this.poolFees = (this.assetTo.amount * this.currentPair.fees) / 10000;
+        
+        this.gasFees = await this.$store.dispatch("getEstimatedGasFees", {
+            asset1: this.assetTo.asset,
+            atomicAmountFrom: Math.floor(this.assetFrom.amount * Math.pow(10, this.assetFrom.asset.digit)),
+            pairScId: this.currentPair.contract,
+        })
     }
 }
 </script>
@@ -128,6 +152,9 @@ export default {
         flex-direction: column;
         align-items: center;
     }
-
+    .gas-fees {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
 }
 </style>

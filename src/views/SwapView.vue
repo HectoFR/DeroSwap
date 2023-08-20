@@ -52,9 +52,14 @@
         <button
           type="submit"
           @click="displayConfirmation = true"
-          :disabled="isNaN(currentRealRatio)"
+          :disabled="isNaN(currentRealRatio) || !from.amount || !to.amount || from.amount > from.asset.realBalance"
         >
-          {{ isNaN(currentRealRatio) ? "No liquidity in pool" : "Swap" }}
+          <template v-if="from.amount > from.asset.realBalance">
+            Not enough liquidity
+          </template>
+          <template v-else>
+            {{ isNaN(currentRealRatio) ? "No liquidity in pool" : "Swap" }}
+          </template>
         </button>
       </div>
     </div>
@@ -73,9 +78,11 @@
         :asset-from="from"
         :asset-to="to"
         :amount="from.amount"
+        :current-pair="currentPair"
+        :slippage="slippage"
         operation="Swap"
         @close="displayConfirmation = false"
-        @submit="null"
+        @submit="submit"
       />
     </transition>
   </div>
@@ -192,13 +199,26 @@ export default {
       const digitsTo = this.to.asset.digit;
 
       const amountToWithSlippage = Math.floor(
-        ((amount * Math.pow(10, digitsFrom)) * valueTo) / (valueFrom + amount* Math.pow(10, digitsFrom))
+        ((amount * Math.pow(10, digitsFrom)) * valueTo) / (valueFrom + amount * Math.pow(10, digitsFrom))
       ) / Math.pow(10, digitsTo);
       this.to.amount = amountToWithSlippage;
     },
     amountToChanged() {
-      const ratio = this.inverted ? 1 / this.currentPair.realRatio : this.currentPair.realRatio;
-      this.from.amount = this.to.amount / ratio;
+      const ratio = this.inverted ? (1 / this.currentPair.realRatio) : (1 / this.currentPair.realRatio);
+      this.from.amount = this.to.amount * ratio;
+    },
+    async submit() {
+      const res = await this.$store.dispatch("swap", {
+        asset1: this.to.asset,
+        atomicAmountFrom: Math.floor(this.from.amount * Math.pow(10, this.from.asset.digit)),
+        pairScId: this.currentPair.contract,
+      })
+
+      if (res.message) { // Error
+        alert(res.message)
+      } else {
+        alert("Success. Txid:" + res.txid)
+      }
     }
   }
 }
