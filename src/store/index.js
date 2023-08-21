@@ -21,6 +21,8 @@ export default createStore({
     address: "",
     userBalances: {},
 
+    toastText: "",
+
     pendingRequestsPerms: {},
     refusedPermissions: {},
 
@@ -47,6 +49,12 @@ export default createStore({
     async start(store) {
       await store.dispatch("openWebSocket");
       await store.dispatch("getAddress");
+    },
+    displayToast(store, text) {
+      store.state.toastText = text;
+      setTimeout(() => {
+        store.state.toastText = null;
+      }, 10000)
     },
     openWebSocket(store) {
       return new Promise((resolve) => {
@@ -126,8 +134,14 @@ export default createStore({
                 }
 
                 if (!method.startsWith("DERO")) {
-                  if ([-32044, -32043].includes(message.error?.code)) {
+                  if ([-32044, -32043, -32601].includes(message.error?.code)) {
                     store.state.refusedPermissions[method] = false;
+                  }
+                }
+                else {
+                  if (message.error?.code == -32601) {
+                    store.state.websocket.close()
+                    return false;
                   }
                 }
                 resolve(message.result || message.error);
@@ -163,6 +177,7 @@ export default createStore({
           keysstring: ["keystore"],
         }
       }).then((sc) => {
+        console.log(sc);
         let keystoreScid = sc.valuesstring[0];
         keystoreScid = "80" + keystoreScid.substring(2, 64);
 

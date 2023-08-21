@@ -204,6 +204,7 @@ export default {
       this.to.amount = amountToWithSlippage;
     },
     amountToChanged() {
+      // TODO: Slippage
       const ratio = this.inverted ? (1 / this.currentPair.realRatio) : (1 / this.currentPair.realRatio);
       this.from.amount = this.to.amount * ratio;
     },
@@ -215,9 +216,9 @@ export default {
       })
 
       if (res.message) { // Error
-        alert(res.message)
+        this.$store.dispatch("displayToast", res.message);
       } else {
-        alert("Success. Txid:" + res.txid)
+        this.$store.dispatch("displayToast", "Success. Txid:" + res.txid);
       }
     }
   }

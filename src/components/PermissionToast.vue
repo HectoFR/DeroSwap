@@ -58,9 +58,13 @@ export default {
     },
     computed: {
         toastText() {
+            if (this.$store.state.toastText) {
+                return this.$store.state.toastText;
+            }
             if (!this.firstPendingPerm) {
                 return "";
             }
+
             return `Waiting wallet response for "${this.firstPendingPerm}"`;
         },
         firstPendingPerm() {
@@ -87,8 +91,9 @@ export default {
   position: fixed;
   bottom: 3rem;
   left: 0;
-  width: 100%;
+  width: calc(100% - 30rem);
   margin: 0;
+  margin-left: 30rem;
   height: 10px;
 
   .toast {

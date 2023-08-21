@@ -21,7 +21,7 @@
           <div v-if="connectionState === -1">
             Start the XSWD Server on your DERO Wallet:
             <ol>
-              <li>Open your wallet (cli for example) in remote mode</li>
+              <li>Open your wallet (cli for example) in <b>remote mode</b></li>
               <li>Select "16: Start XSWD Server"</li>
               <li>Click on the button to ask for the authorization</li>
             </ol>
