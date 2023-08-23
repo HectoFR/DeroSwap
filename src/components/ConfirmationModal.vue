@@ -21,7 +21,7 @@
                 <br />
                 Gas fees: {{ gasFees }} DERO
                 <br />
-                Slippage: {{ slippage }} %
+                Slippage: {{ slippage < .001 ? 'less than 0,001' : slippage }}%
             </div>
 
             <div class="center">

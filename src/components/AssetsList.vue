@@ -11,7 +11,17 @@
                             :src="`/assets/${asset.name}.png`"
                             :alt="`${asset.name} image`"
                         >
-                        <span>{{ asset.name }}</span>
+                        <span>
+                            {{ asset.name }}
+                        </span>
+                        <!-- :title="asset.scid" -->
+                        <i
+                            class="fa fa-info"
+                            v-tooltip="{
+                                content: asset.scid,
+                                triggers: ['hover', 'click'],
+                            }"
+                        />
                     </div>
                     <div v-if="asset.realBalance !== undefined">
                         Balance:
@@ -95,6 +105,11 @@ export default {
         &+li {
             border-top: 1px solid white;
         }
+    }
+
+    .fa-info {
+        font-size: 1.3rem;
+        margin-left: auto;
     }
 
     img {

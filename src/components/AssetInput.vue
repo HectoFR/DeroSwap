@@ -13,13 +13,20 @@
             </component>
         </div>
         <div class="input-container">
+            <i
+                class="fa fa-info"
+                @click.stop=""
+                v-tooltip="{
+                    content: asset.scid,
+                    triggers: ['hover', 'click'],
+                }"
+            />
             <input 
                 type="number"
                 :value="amount"
                 placeholder="0"
                 @change="$emit('amount-changed', $event.target.valueAsNumber)"
                 :class="{ 'no-buttons': noButtons }"
-
             />
             <div
                 v-if="!noButtons"
@@ -61,11 +68,11 @@ export default {
 @use "@/assets/variables.scss" as var;
 
 .asset-input {
-    overflow: hidden;
+    // overflow: hidden;
     display: flex;
     align-items: center;
     align-items: stretch;
-
+    
     .asset-selector {
         display: flex;
         gap: 1rem;
@@ -93,10 +100,11 @@ export default {
 
     .input-container {
         width: 100%;
+        position: relative;
     }
 
     input {
-        padding: 1rem 2rem;
+        padding: 1rem 4rem 1rem 2rem;
         width: 100%;
         height: 5.2rem;
         background: var.$light-background-color;
@@ -137,6 +145,17 @@ export default {
                 background-color: lighten(var.$light-background-color, 35%);
             }
         }
+    }
+
+    .fa-info {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 5.4rem;
+        padding: 1rem;
+        border-left: 1px solid lighten(var.$light-background-color, 35%);
     }
 }
 </style>

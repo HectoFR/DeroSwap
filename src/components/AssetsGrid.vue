@@ -7,6 +7,14 @@
                     :alt="`${asset.name} image`"
                 >
                 <span>{{ asset.name }}</span>
+                <i
+                    class="fa fa-info"
+                    @click.stop=""
+                    v-tooltip="{
+                        content: asset.scid,
+                        triggers: ['hover', 'click'],
+                    }"
+                />
             </button>
         </li>
     </ul>
@@ -33,6 +41,7 @@ export default {
 
     li {
         grid-column: span 4;
+        position: relative;
 
         span {
             overflow: hidden;
@@ -64,6 +73,14 @@ export default {
         &:hover {
             background-color: var.$very-light-background-color;
         }
+    }
+
+    .fa-info {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 99;
+        padding: 1rem;
     }
 }
 </style>
