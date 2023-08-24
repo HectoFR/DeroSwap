@@ -102,7 +102,7 @@ export default {
 
         this.poolFees = (this.assetTo.amount * this.currentPair.fees) / 10000;
         
-        this.gasFees = await this.$store.dispatch("getEstimatedGasFees", {
+        this.gasFees = await this.$store.dispatch("getEstimatedSwapGasFees", {
             asset1: this.assetTo.asset,
             atomicAmountFrom: Math.floor(this.assetFrom.amount * Math.pow(10, this.assetFrom.asset.digit)),
             pairScId: this.currentPair.contract,

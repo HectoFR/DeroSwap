@@ -48,7 +48,7 @@
           Estimated fees: 0.000 DERO
         </p>
         <div class="view-submit-button">
-          <button @click="displayConfirmation = true">
+          <button @click="submit()/*displayConfirmation = true*/">
             Add to pool
           </button>
           <button @click="selectedPair = null">
@@ -65,7 +65,7 @@
         :asset-to="selectedPair.asset2"
         operation="Pool"
         @close="displayConfirmation = false"
-        @submit="null"
+        @submit="submit"
       />
     </transition>
   </div>
@@ -75,7 +75,9 @@
 import PoolArray from "@/components/PoolArray.vue";
 import AssetInput from "@/components/AssetInput.vue";
 import ConfirmationModal from "@/components/ConfirmationModal.vue";
+import { Decimal } from "decimal.js"
 
+// TODO: afficher gas fees
 export default {
   name: 'PoolView',
   components: {
@@ -88,23 +90,72 @@ export default {
       selectedPair: null,
       displayConfirmation: false,
       amountFrom: 0,
-      amoutTo: 0,
+      amountTo: 0,
     }
   },
   computed: {
     assets() {
       return this.$store.state.assets;
-    }
+    },
+    atomicFrom() {
+      return this.amountFrom * Math.pow(10, this.selectedPair.asset1.digit)
+    },
+    atomicTo() {
+      return this.amountTo * Math.pow(10, this.selectedPair.asset2.digit)
+    },
   },
   methods: {
+    // Updates 'amountTo' based on the changes in 'amountFrom'
     amountFromChanged() {
-
+      this.amountTo = this.divideIntByPowerOfTen(
+        this.multiplyDivideThenFloor(
+          this.multiplyByPowerOfTenInt(this.atomicFrom, this.selectedPair.asset1.digit),
+          this.selectedPair.val2, 
+          this.selectedPair.val1
+        ), 
+        this.selectedPair.asset2.digit
+      );
     },
+     // Updates 'amountFrom' based on the changes in 'amountTo'
     amountToChanged() {
-      
-    }
-  }
+      this.amountFrom = this.divideIntByPowerOfTen(
+        this.multiplyDivideThenFloor(
+          this.multiplyByPowerOfTenInt(this.atomicTo, this.selectedPair.asset2.digit),
+          this.selectedPair.val1,
+          this.selectedPair.val2
+        ), 
+        this.selectedPair.asset1.digit
+      );
+    },
+    // Multiplies two numbers, then divides by a third, and returns the floor of the result.
+    multiplyDivideThenFloor(I, valueTo, valueFrom) {
+      Decimal.set({precision: 80});
+      return new Decimal(I).mul(valueTo).div(valueFrom).floor().toNumber();
+    },
+    // Multiplies a number by 10^exponent and returns the integer value.
+    multiplyByPowerOfTenInt(n, exponent) {
+      const str = n.toString().replace('.', '') + Array(exponent).fill(0).join('');
+      const res = str.length > exponent ? str.slice(0, str.length - exponent) : str;
+      return Number.parseInt(res);
+    },
 
+    // Divides an integer by 10^exponent.
+    divideIntByPowerOfTen(n, exponent) {
+      const str = n.toString();
+      const full = Array(exponent).fill(0).join('') + str;
+      const res = full.slice(0, full.length - exponent) + '.' + full.slice(full.length - exponent);
+      return Number.parseFloat(res);
+    },
+
+    submit() {
+      this.$store.dispatch("poolAdd", {
+        pair: this.selectedPair,
+        atomicAmountFrom: this.multiplyByPowerOfTenInt(this.atomicFrom, this.selectedPair.asset1.digit),
+        atomicAmountTo: this.multiplyByPowerOfTenInt(this.atomicTo, this.selectedPair.asset2.digit),
+      });
+    }
+
+  }
 }
 </script>
 

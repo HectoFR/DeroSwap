@@ -305,7 +305,7 @@ export default createStore({
     getRandomAddress(store) {
       return store.dispatch("sendRpcAndWait", { method: "DERO.GetRandomAddress" })
     },
-    async getEstimatedGasFees(store, { asset1, atomicAmountFrom, pairScId }) {
+    async getEstimatedSwapGasFees(store, { asset1, atomicAmountFrom, pairScId }) {
       const randomAddress = (await store.dispatch("getRandomAddress")).address[0]
 
       const params = {
@@ -326,9 +326,32 @@ export default createStore({
       })
       return gasEstimate.gasstorage/ 100000
     },
+    async getEstimatedPoolAddGasFees(store, { pair, atomicAmountFrom, atomicAmountTo }) {
+      const randomAddress = (await store.dispatch("getRandomAddress")).address[0]
+
+      console.log(pair);
+      const params = {
+        sc_rpc: [
+          { name: "entrypoint", datatype: "S", value: "AddLiquidity" },
+          { name: "SC_ID", datatype: "H", value: pair.contract },
+          { name: "SC_ACTION", datatype: "U", value: 0 },
+        ],
+        transfers: [
+          { scid: pair.asset1.scid, destination: randomAddress, burn: atomicAmountFrom },
+          { scid: pair.asset2.scid, destination: randomAddress, burn: atomicAmountTo },
+        ],
+        signer: store.state.address,
+      };
+
+      const gasEstimate = await store.dispatch(
+        "sendRpcAndWait", {
+          method: "DERO.GetGasEstimate", params
+      })
+      return gasEstimate.gasstorage/ 100000
+    },
     async swap(store, { asset1, atomicAmountFrom, pairScId }) {
       const randomAddress = (await store.dispatch("getRandomAddress")).address[0];
-      const fees = await store.dispatch("getEstimatedGasFees", {
+      const fees = await store.dispatch("getEstimatedSwapGasFees", {
         asset1, atomicAmountFrom, pairScId
       }) * 100000;
 
@@ -346,6 +369,36 @@ export default createStore({
         "sendRpcAndWait", {
           method: "transfer", params
       })
+    },
+    async poolAdd(store, { pair, atomicAmountFrom, atomicAmountTo, }) {
+      const randomAddress = (await store.dispatch("getRandomAddress")).address[0];
+      const fees = await store.dispatch("getEstimatedPoolAddGasFees", {
+        pair, atomicAmountFrom, atomicAmountTo
+      }) * 100000;
+
+      const params = {
+        scid: pair.contract,
+        ringsize: 2,
+        sc_rpc: [{ name: "entrypoint", datatype: "S", value: "AddLiquidity" }],
+        transfers: [
+          {
+            scid: pair.asset1.scid,
+            destination: randomAddress,
+            burn: atomicAmountFrom,
+          },
+          {
+            scid: pair.asset2.scid,
+            destination: randomAddress,
+            burn: atomicAmountTo,
+          },
+        ],
+        fees,
+      };
+
+      return await store.dispatch(
+        "sendRpcAndWait", {
+          method: "transfer", params
+      });
     }
   },
 })
